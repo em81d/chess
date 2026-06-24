@@ -69,6 +69,9 @@ public class ChessPiece {
             case KING -> {
                 return new KingMovesCalculator(this, myPosition, board).calculateKing();
             }
+            case KNIGHT -> {
+                return new KnightMovesCalculator(this, myPosition, board).calculateKnight();
+            }
             default -> {
                 return new ArrayList<>();
             }
