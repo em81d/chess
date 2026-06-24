@@ -23,7 +23,7 @@ public class KingMovesCalculator {
     public Collection<ChessMove> calculateKing() {
         Collection<ChessMove> moves = new ArrayList<>();
 
-        List<ChessPosition> positions = new ArrayList<ChessPosition>(List.of(new ChessPosition(row+1, col), new ChessPosition(row-1, col), new ChessPosition(row, col+1), new ChessPosition(row, col-1), new ChessPosition(row+1, col+1), new ChessPosition(row-1, col-1), new ChessPosition(row+1, col-1), new ChessPosition(row-1, col+1)));
+        List<ChessPosition> positions = new ArrayList<>(List.of(new ChessPosition(row+1, col), new ChessPosition(row-1, col), new ChessPosition(row, col+1), new ChessPosition(row, col-1), new ChessPosition(row+1, col+1), new ChessPosition(row-1, col-1), new ChessPosition(row+1, col-1), new ChessPosition(row-1, col+1)));
 
 
         for (ChessPosition current : positions) {

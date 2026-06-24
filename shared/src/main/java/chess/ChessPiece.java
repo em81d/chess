@@ -58,14 +58,18 @@ public class ChessPiece {
 
         switch (type) {
 
-            case BISHOP:
+            case BISHOP -> {
                 return new BishopMovesCalculator(this, myPosition, board).calculateBishop();
-            case QUEEN:
+            }
+            case QUEEN -> {
                 return new QueenMovesCalculator(this, myPosition, board).calculateQueen();
-            case KING:
+            }
+            case KING -> {
                 return new KingMovesCalculator(this, myPosition, board).calculateKing();
-            default:
+            }
+            default -> {
                 return new ArrayList<>();
+            }
         }
     }
 
