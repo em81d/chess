@@ -61,19 +61,13 @@ public class ChessGame implements Cloneable{
             return null;
         }
         else {
-            ChessGame gameclone;
+            ChessGame gameclone = clone();
             for (ChessMove move : potentialMoves) {
                 //add to valid moves if doesn't leave own king in check
-                gameclone = clone();
-                try {
-                    gameclone.makeMove(move);
-                    if (!gameclone.isInCheck(gameclone.getTeamTurn())) {
-                        allValidMoves.add(move);
-                    }
-                } catch (InvalidMoveException e) {
-                    //nothing needs to be done because it doesn't get added to allValidMoves
+                gameclone.makeMoveWithoutChecking(move, p, gameclone.getBoard());
+                if (!gameclone.isInCheck(gameclone.getTeamTurn())) {
+                    allValidMoves.add(move);
                 }
-
             }
         }
 
@@ -89,9 +83,17 @@ public class ChessGame implements Cloneable{
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPiece p = chessboard.getPiece(move.getStartPosition());
         if (validMoves(move.getStartPosition()).contains(move) && p.getTeamColor() == turn) {
-            chessboard.addPiece(move.getEndPosition(), p);
-            chessboard.addPiece(move.getStartPosition(), null);
+            makeMoveWithoutChecking(move, p, chessboard);
         }
+        else {
+            throw new InvalidMoveException("Not valid!");
+        }
+    }
+
+    //the fake board calls this one so checking doesn't trap it in a loop. the real board calls this one after checking validity.
+    public void makeMoveWithoutChecking(ChessMove move, ChessPiece p, ChessBoard board) {
+        board.addPiece(move.getEndPosition(), p);
+        board.addPiece(move.getStartPosition(), null);
     }
 
     /**
@@ -218,7 +220,12 @@ public class ChessGame implements Cloneable{
                 for (int j=1; j<9; j++) {
                     currentPos = new ChessPosition(i,j);
                     oldPiece = chessboard.getPiece(currentPos);
-                    newBoard.addPiece(currentPos, new ChessPiece(oldPiece.getTeamColor(), oldPiece.getPieceType()));
+                    if (oldPiece==null) {
+                        newBoard.addPiece(currentPos, null);
+                    }
+                    else {
+                        newBoard.addPiece(currentPos, new ChessPiece(oldPiece.getTeamColor(), oldPiece.getPieceType()));
+                    }
                 }
             }
             clone.setBoard(newBoard);
