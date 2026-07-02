@@ -53,13 +53,28 @@ public class ChessGame implements Cloneable{
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        Collection<ChessMove> potentialMoves = chessboard.getPiece(startPosition).pieceMoves(chessboard, startPosition);
+        ChessPiece p = chessboard.getPiece(startPosition);
+        Collection<ChessMove> potentialMoves = p.pieceMoves(chessboard, startPosition);
         Collection<ChessMove> allValidMoves = new ArrayList<>();
-        ChessGame gameclone;
-        for (ChessMove move : potentialMoves) {
-            //add to valid moves if doesn't leave own king in check
-            gameclone = clone();
 
+        if (p == null) {
+            return null;
+        }
+        else {
+            ChessGame gameclone;
+            for (ChessMove move : potentialMoves) {
+                //add to valid moves if doesn't leave own king in check
+                gameclone = clone();
+                try {
+                    gameclone.makeMove(move);
+                    if (!gameclone.isInCheck(gameclone.getTeamTurn())) {
+                        allValidMoves.add(move);
+                    }
+                } catch (InvalidMoveException e) {
+                    //nothing needs to be done because it doesn't get added to allValidMoves
+                }
+
+            }
         }
 
         return allValidMoves;
@@ -72,7 +87,11 @@ public class ChessGame implements Cloneable{
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPiece p = chessboard.getPiece(move.getStartPosition());
+        if (validMoves(move.getStartPosition()).contains(move) && p.getTeamColor() == turn) {
+            chessboard.addPiece(move.getEndPosition(), p);
+            chessboard.addPiece(move.getStartPosition(), null);
+        }
     }
 
     /**
