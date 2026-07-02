@@ -11,19 +11,21 @@ import java.util.Objects;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessGame {
+public class ChessGame implements Cloneable{
 
     private ChessBoard chessboard;
+    private TeamColor turn;
 
     public ChessGame() {
-
+        turn = TeamColor.WHITE;
     }
+
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return turn;
     }
 
     /**
@@ -32,7 +34,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        turn = team;
     }
 
     /**
@@ -53,8 +55,11 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         Collection<ChessMove> potentialMoves = chessboard.getPiece(startPosition).pieceMoves(chessboard, startPosition);
         Collection<ChessMove> allValidMoves = new ArrayList<>();
+        ChessGame gameclone;
         for (ChessMove move : potentialMoves) {
             //add to valid moves if doesn't leave own king in check
+            gameclone = clone();
+
         }
 
         return allValidMoves;
@@ -117,7 +122,6 @@ public class ChessGame {
                 }
             }
         }
-
         return null;
     }
 
@@ -181,4 +185,30 @@ public class ChessGame {
                 "chessboard=" + chessboard +
                 '}';
     }
+
+    @Override
+    public ChessGame clone() {
+        try {
+            ChessGame clone = (ChessGame) super.clone();
+            clone.setTeamTurn(turn);
+            ChessBoard newBoard = new ChessBoard();
+            //updates the board with new pieces according to what is on the old board
+            ChessPiece oldPiece;
+            ChessPosition currentPos;
+            for (int i=1; i<9; i++) {
+                for (int j=1; j<9; j++) {
+                    currentPos = new ChessPosition(i,j);
+                    oldPiece = chessboard.getPiece(currentPos);
+                    newBoard.addPiece(currentPos, new ChessPiece(oldPiece.getTeamColor(), oldPiece.getPieceType()));
+                }
+            }
+            clone.setBoard(newBoard);
+            return clone;
+        }
+        catch (CloneNotSupportedException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+
 }
