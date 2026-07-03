@@ -12,7 +12,6 @@ public class KingMovesCalculator extends MoveCalculator{
     }
 
     public Collection<ChessMove> calculateKing() {
-        Collection<ChessMove> moves = new ArrayList<>();
 
         List<ChessPosition> positions = new ArrayList<>(List.of(new ChessPosition(row+1, col)));
         positions.add(new ChessPosition(row-1, col));

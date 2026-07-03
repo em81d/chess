@@ -1,7 +1,7 @@
 package chess;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+//import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -55,24 +55,24 @@ public class ChessGame implements Cloneable{
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        ChessPiece p = chessboard.getPiece(startPosition);
-        Collection<ChessMove> potentialMoves = p.pieceMoves(chessboard, startPosition);
-        Collection<ChessMove> allValidMoves = new ArrayList<>();
 
+        ChessPiece p = chessboard.getPiece(startPosition);
 
         if (p == null) {
             return null;
         }
-        else {
-            ChessGame gameclone;
-            for (ChessMove move : potentialMoves) {
-                gameclone = clone();
 
-                //add to valid moves if it doesn't leave own king in check
-                gameclone.makeMoveWithoutChecking(move, p, gameclone.getBoard());
-                if (!gameclone.isInCheck(p.getTeamColor())) {
-                    allValidMoves.add(move);
-                }
+        Collection<ChessMove> potentialMoves = p.pieceMoves(chessboard, startPosition);
+        Collection<ChessMove> allValidMoves = new ArrayList<>();
+
+        ChessGame gameclone;
+        for (ChessMove move : potentialMoves) {
+            gameclone = clone();
+
+            //add to valid moves if it doesn't leave own king in check
+            gameclone.makeMoveWithoutChecking(move, p, gameclone.getBoard());
+            if (!gameclone.isInCheck(p.getTeamColor())) {
+                allValidMoves.add(move);
             }
         }
 
@@ -182,10 +182,7 @@ public class ChessGame implements Cloneable{
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        if (isInCheck(teamColor) && teamValidMoves(teamColor).size()==0){
-            return true;
-        }
-        return false;
+        return isInCheck(teamColor) && teamValidMoves(teamColor).isEmpty();
     }
 
     /**
@@ -197,7 +194,7 @@ public class ChessGame implements Cloneable{
      */
     public boolean isInStalemate(TeamColor teamColor) {
         Collection<ChessMove> totalValidMoves = teamValidMoves(teamColor);
-        if (totalValidMoves.size()==0 && !isInCheck(teamColor)) {
+        if (totalValidMoves.isEmpty() && !isInCheck(teamColor)) {
             return true;
         }
         return false;
@@ -214,9 +211,7 @@ public class ChessGame implements Cloneable{
                 currentPos = new ChessPosition(i,j);
                 if (chessboard.getPiece(currentPos)!=null && chessboard.getPiece(currentPos).getTeamColor()==team) {
                     Collection<ChessMove> valid = validMoves(currentPos);
-                    for (ChessMove m : valid) {
-                        totalValidMoves.add(m);
-                    }
+                    totalValidMoves.addAll(valid);
                 }
             }
         }

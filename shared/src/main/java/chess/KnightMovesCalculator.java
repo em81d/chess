@@ -13,7 +13,6 @@ public class KnightMovesCalculator extends MoveCalculator{
     }
 
     public Collection<ChessMove> calculateKnight() {
-        Collection<ChessMove> moves = new ArrayList<>();
 
         List<ChessPosition> positions = new ArrayList<>(List.of(new ChessPosition(row+2, col+1), new ChessPosition(row+2, col-1)));
         positions.add(new ChessPosition(row-2, col+1));

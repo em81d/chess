@@ -179,10 +179,7 @@ public class MoveCalculator {
 
 
     public boolean inRange(int r, int c) {
-        if (r>0&&r<9&&c>0&&c<9) {
-            return true;
-        }
-        return false;
+        return r>0 && r<9 && c>0 && c<9;
     }
 
     public boolean emptyOrCaptureable(ChessBoard b, ChessGame.TeamColor c, ChessPosition p){

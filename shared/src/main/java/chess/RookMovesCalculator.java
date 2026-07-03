@@ -11,10 +11,8 @@ public class RookMovesCalculator extends MoveCalculator{
     }
 
     public Collection<ChessMove> calculateRook() {
-        Collection<ChessMove> moves = new ArrayList<>();
 
-        moves.addAll(moveStraightUnlimited());
+        return moveStraightUnlimited();
 
-        return moves;
     }
 }

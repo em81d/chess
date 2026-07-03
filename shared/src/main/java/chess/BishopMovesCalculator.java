@@ -11,10 +11,7 @@ public class BishopMovesCalculator extends MoveCalculator{
     }
 
     public Collection<ChessMove> calculateBishop() {
-        Collection<ChessMove> moves = new ArrayList<>();
 
-        moves.addAll(moveDiagonalUnlimited());
-
-        return moves;
+        return moveDiagonalUnlimited();
     }
 }
