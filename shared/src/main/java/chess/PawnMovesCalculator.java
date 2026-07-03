@@ -36,11 +36,8 @@ public class PawnMovesCalculator extends MoveCalculator{
             positions = new ArrayList<>();
             positions.add(new ChessPosition(row + 1, col + 1));
             positions.add(new ChessPosition(row + 1, col - 1));
-            for (ChessPosition current : positions) {
-                if (inRange(current.getRow(),current.getColumn()) && captureable(board.getPiece(current), piece.getTeamColor())){
-                    moves.addAll(addPawnMove(current));
-                }
-            }
+
+            addDiagonalCaptures(positions, moves);
         }
 
         else {
@@ -63,11 +60,8 @@ public class PawnMovesCalculator extends MoveCalculator{
             positions = new ArrayList<>();
             positions.add(new ChessPosition(row - 1, col + 1));
             positions.add(new ChessPosition(row - 1, col - 1));
-            for (ChessPosition current : positions) {
-                if(inRange(current.getRow(),current.getColumn()) && captureable(board.getPiece(current), piece.getTeamColor())) {
-                    moves.addAll(addPawnMove(current));
-                }
-            }
+
+            addDiagonalCaptures(positions, moves);
         }
 
 
@@ -87,5 +81,13 @@ public class PawnMovesCalculator extends MoveCalculator{
             moves.add(new ChessMove(pos, end, null));
         }
         return moves;
+    }
+
+    public void addDiagonalCaptures(List<ChessPosition> p, Collection<ChessMove> m) {
+        for (ChessPosition current : p) {
+            if (inRange(current.getRow(),current.getColumn()) && captureable(board.getPiece(current), piece.getTeamColor())){
+                m.addAll(addPawnMove(current));
+            }
+        }
     }
 }

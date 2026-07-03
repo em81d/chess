@@ -150,7 +150,8 @@ public class ChessGame implements Cloneable{
         return false;
     }
 
-    public boolean moveTakesKing(Collection<ChessMove> currentMoves, ChessPosition king){//checks if the current piece is opponent's color, if so, if any of their potential moves get them to king's position
+    public boolean moveTakesKing(Collection<ChessMove> currentMoves, ChessPosition king){
+        //checks if the current piece is opponent's color, if so, if any of their potential moves get them to king's position
         for (ChessMove move : currentMoves) {
             if (move.getEndPosition().equals(king)) {
                 return true;
