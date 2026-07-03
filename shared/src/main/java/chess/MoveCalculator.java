@@ -5,11 +5,11 @@ import java.util.Collection;
 
 public class MoveCalculator {
 
-    private final ChessPiece piece;
-    private final ChessPosition pos;
-    private final int row;
-    private final int col;
-    private final ChessBoard board;
+    protected final ChessPiece piece;
+    protected final ChessPosition pos;
+    protected final int row;
+    protected final int col;
+    protected final ChessBoard board;
 
     public MoveCalculator(ChessPiece piece, ChessPosition pos, ChessBoard board) {
         this.piece = piece;
@@ -175,6 +175,14 @@ public class MoveCalculator {
         }
 
         return moves;
+    }
+
+
+    public boolean inRange(int r, int c) {
+        if (r>0&&r<9&&c>0&&c<9) {
+            return true;
+        }
+        return false;
     }
 
 

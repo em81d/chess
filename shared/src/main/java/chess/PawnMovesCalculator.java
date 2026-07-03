@@ -4,20 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class PawnMovesCalculator {
+public class PawnMovesCalculator extends MoveCalculator{
 
-    private final ChessPiece piece;
-    private final ChessPosition pos;
-    private final int row;
-    private final int col;
-    private final ChessBoard board;
 
     public PawnMovesCalculator(ChessPiece piece, ChessPosition pos, ChessBoard board) {
-        this.piece = piece;
-        this.pos = pos;
-        this.row = pos.getRow();
-        this.col = pos.getColumn();
-        this.board = board;
+        super(piece, pos, board);
     }
 
     public Collection<ChessMove> calculatePawn() {
@@ -33,7 +24,7 @@ public class PawnMovesCalculator {
             }
 
             for (ChessPosition current : positions) {
-                if (current.getRow() <= 8 && current.getColumn() <= 8 && current.getColumn() > 0 && (board.getPiece(current) == null)) {
+                if (inRange(current.getRow(), current.getColumn()) && (board.getPiece(current) == null)) {
                     if (current.getRow() < 8) {
                         moves.add(new ChessMove(pos, current, null));
                     } else if (current.getRow() == 8) {
@@ -50,7 +41,7 @@ public class PawnMovesCalculator {
             positions.add(new ChessPosition(row + 1, col + 1));
             positions.add(new ChessPosition(row + 1, col - 1));
             for (ChessPosition current : positions) {
-                if (current.getRow() <= 8 && current.getColumn() <= 8 && current.getColumn() > 0 && (board.getPiece(current) != null && board.getPiece(current).getTeamColor() != piece.getTeamColor())) {
+                if (inRange(current.getRow(), current.getColumn()) && (board.getPiece(current) != null && board.getPiece(current).getTeamColor() != piece.getTeamColor())) {
                     if (current.getRow() < 8) {
                         moves.add(new ChessMove(pos, current, null));
                     } else if (current.getRow() == 8) {
@@ -74,7 +65,7 @@ public class PawnMovesCalculator {
             }
 
             for (ChessPosition current : positions) {
-                if (current.getRow() >= 1 && current.getColumn() <= 8 && current.getColumn() >= 1 && (board.getPiece(current) == null)) {
+                if (inRange(current.getRow(), current.getColumn()) && (board.getPiece(current) == null)) {
                     if (current.getRow() > 1) {
                         moves.add(new ChessMove(pos, current, null));
                     } else if (current.getRow() == 1) {
@@ -91,7 +82,7 @@ public class PawnMovesCalculator {
             positions.add(new ChessPosition(row - 1, col + 1));
             positions.add(new ChessPosition(row - 1, col - 1));
             for (ChessPosition current : positions) {
-                if (current.getRow() >= 1 && current.getColumn() <= 8 && current.getColumn() >=1 && (board.getPiece(current) != null && board.getPiece(current).getTeamColor() != piece.getTeamColor())) {
+                if (inRange(current.getRow(), current.getColumn()) && (board.getPiece(current) != null && board.getPiece(current).getTeamColor() != piece.getTeamColor())) {
                     if (current.getRow() > 1) {
                         moves.add(new ChessMove(pos, current, null));
                     } else if (current.getRow() == 1) {
