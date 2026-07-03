@@ -84,14 +84,27 @@ public class ChessGame implements Cloneable{
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPiece p = chessboard.getPiece(move.getStartPosition());
-        if (validMoves(move.getStartPosition()).contains(move) && p.getTeamColor() == turn) {
+        if (p != null && validMoves(move.getStartPosition()).contains(move) && p.getTeamColor() == turn) {
             if (move.getPromotionPiece() != null) {
                 p = new ChessPiece(p.getTeamColor(), move.getPromotionPiece());
             }
             makeMoveWithoutChecking(move, p, chessboard);
+            advanceTeamTurn();
         }
         else {
             throw new InvalidMoveException("Not valid!");
+        }
+    }
+
+    /**
+     * Switches whose turn it is
+     */
+    public void advanceTeamTurn() {
+        if (turn == TeamColor.BLACK) {
+            turn = TeamColor.WHITE;
+        }
+        else {
+            turn = TeamColor.BLACK;
         }
     }
 
