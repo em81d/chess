@@ -191,8 +191,8 @@ public class ChessGame implements Cloneable{
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        Collection<ChessMove> total_valid_moves = teamValidMoves(teamColor);
-        if (total_valid_moves.size()==0 && !isInCheck(teamColor)) {
+        Collection<ChessMove> totalValidMoves = teamValidMoves(teamColor);
+        if (totalValidMoves.size()==0 && !isInCheck(teamColor)) {
             return true;
         }
         return false;
@@ -203,19 +203,19 @@ public class ChessGame implements Cloneable{
      */
     public Collection<ChessMove> teamValidMoves(TeamColor team) {
         ChessPosition currentPos;
-        Collection<ChessMove> total_valid_moves = new ArrayList<>();
+        Collection<ChessMove> totalValidMoves = new ArrayList<>();
         for (int i=1; i<9; i++) {
             for (int j=1; j<9; j++) {
                 currentPos = new ChessPosition(i,j);
                 if (chessboard.getPiece(currentPos)!=null && chessboard.getPiece(currentPos).getTeamColor()==team) {
                     Collection<ChessMove> valid = validMoves(currentPos);
                     for (ChessMove m : valid) {
-                        total_valid_moves.add(m);
+                        totalValidMoves.add(m);
                     }
                 }
             }
         }
-        return total_valid_moves;
+        return totalValidMoves;
     }
 
     /**
