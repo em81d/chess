@@ -182,7 +182,10 @@ public class ChessGame implements Cloneable{
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (isInCheck(teamColor) && teamValidMoves(teamColor).size()==0){
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -193,12 +196,23 @@ public class ChessGame implements Cloneable{
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
+        Collection<ChessMove> total_valid_moves = teamValidMoves(teamColor);
+        if (total_valid_moves.size()==0 && !isInCheck(teamColor)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+    returns all the valid moves a team could make by any piece - used in checkmate and stalemate functions
+     */
+    public Collection<ChessMove> teamValidMoves(TeamColor team) {
         ChessPosition currentPos;
         Collection<ChessMove> total_valid_moves = new ArrayList<>();
         for (int i=1; i<9; i++) {
             for (int j=1; j<9; j++) {
                 currentPos = new ChessPosition(i,j);
-                if (chessboard.getPiece(currentPos)!=null && chessboard.getPiece(currentPos).getTeamColor()==teamColor) {
+                if (chessboard.getPiece(currentPos)!=null && chessboard.getPiece(currentPos).getTeamColor()==team) {
                     Collection<ChessMove> valid = validMoves(currentPos);
                     for (ChessMove m : valid) {
                         total_valid_moves.add(m);
@@ -206,10 +220,7 @@ public class ChessGame implements Cloneable{
                 }
             }
         }
-        if (total_valid_moves.size()==0 && !isInCheck(teamColor)) {
-            return true;
-        }
-        return false;
+        return total_valid_moves;
     }
 
     /**
