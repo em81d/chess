@@ -18,6 +18,8 @@ public class ChessGame implements Cloneable{
 
     public ChessGame() {
         turn = TeamColor.WHITE;
+        chessboard = new ChessBoard();
+        chessboard.resetBoard();
     }
 
 
@@ -83,6 +85,9 @@ public class ChessGame implements Cloneable{
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPiece p = chessboard.getPiece(move.getStartPosition());
         if (validMoves(move.getStartPosition()).contains(move) && p.getTeamColor() == turn) {
+            if (move.getPromotionPiece() != null) {
+                p = new ChessPiece(p.getTeamColor(), move.getPromotionPiece());
+            }
             makeMoveWithoutChecking(move, p, chessboard);
         }
         else {
