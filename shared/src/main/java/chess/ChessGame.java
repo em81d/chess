@@ -59,20 +59,29 @@ public class ChessGame implements Cloneable{
         Collection<ChessMove> potentialMoves = p.pieceMoves(chessboard, startPosition);
         Collection<ChessMove> allValidMoves = new ArrayList<>();
 
+
+        //debug
+        System.out.println("all potential moves: " + potentialMoves);
+        System.out.println("Current king position: " + getKingPosition(p.getTeamColor()));
+
+
+
         if (p == null) {
             return null;
         }
         else {
             ChessGame gameclone = clone();
             for (ChessMove move : potentialMoves) {
-                //add to valid moves if doesn't leave own king in check
+
+                //add to valid moves if it doesn't leave own king in check
                 gameclone.makeMoveWithoutChecking(move, p, gameclone.getBoard());
-                if (!gameclone.isInCheck(gameclone.getTeamTurn())) {
+                if (!gameclone.isInCheck(p.getTeamColor())) {
                     allValidMoves.add(move);
                 }
             }
         }
 
+        System.out.println(allValidMoves);
         return allValidMoves;
     }
 
@@ -197,7 +206,7 @@ public class ChessGame implements Cloneable{
                 }
             }
         }
-        if (total_valid_moves.size()==0) {
+        if (total_valid_moves.size()==0 && !isInCheck(teamColor)) {
             return true;
         }
         return false;
@@ -228,18 +237,19 @@ public class ChessGame implements Cloneable{
             return false;
         }
         ChessGame chessGame = (ChessGame) o;
-        return Objects.equals(chessboard, chessGame.chessboard);
+        return Objects.equals(chessboard, chessGame.chessboard) && turn == chessGame.turn;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(chessboard);
+        return Objects.hash(chessboard, turn);
     }
 
     @Override
     public String toString() {
         return "ChessGame{" +
                 "chessboard=" + chessboard +
+                ", turn=" + turn +
                 '}';
     }
 
