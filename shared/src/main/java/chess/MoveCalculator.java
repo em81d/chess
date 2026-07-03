@@ -185,5 +185,24 @@ public class MoveCalculator {
         return false;
     }
 
+    public boolean emptyOrCaptureable(ChessBoard b, ChessGame.TeamColor c, ChessPosition p){
+       return b.getPiece(p)==null||b.getPiece(p).getTeamColor()!=c;
+    }
+
+    public boolean captureable(ChessPiece p, ChessGame.TeamColor c) {
+        return p != null && p.getTeamColor() != c;
+    }
+
+    public Collection<ChessMove> addApplicable(Collection<ChessPosition> positions) {
+        Collection<ChessMove> moves = new ArrayList<>();
+        for (ChessPosition current : positions) {
+            if (inRange(current.getRow(),current.getColumn()) && emptyOrCaptureable(board, piece.getTeamColor(),current)){
+                moves.add(new ChessMove(pos, current, null));
+            }
+
+        }
+
+        return moves;
+    }
 
 }

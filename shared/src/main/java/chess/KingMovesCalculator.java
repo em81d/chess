@@ -24,14 +24,6 @@ public class KingMovesCalculator extends MoveCalculator{
         positions.add(new ChessPosition(row-1, col+1));
 
 
-        for (ChessPosition current : positions) {
-
-            if(inRange(current.getRow(),current.getColumn())&&(board.getPiece(current)==null||board.getPiece(current).getTeamColor()!=piece.getTeamColor())){
-                moves.add(new ChessMove(pos, current, null));
-            }
-
-        }
-
-        return moves;
+        return addApplicable(positions);
     }
 }

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static chess.ChessGame.TeamColor.BLACK;
+import static chess.ChessGame.TeamColor.WHITE;
+
 public class PawnMovesCalculator extends MoveCalculator{
 
 
@@ -15,7 +18,7 @@ public class PawnMovesCalculator extends MoveCalculator{
         Collection<ChessMove> moves = new ArrayList<>();
         List<ChessPosition> positions = new ArrayList<>();
 
-        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+        if (piece.getTeamColor() == WHITE) {
 
             //straight moves white (not diagonal)
             positions.add(new ChessPosition(row + 1, col));
@@ -25,14 +28,7 @@ public class PawnMovesCalculator extends MoveCalculator{
 
             for (ChessPosition current : positions) {
                 if (inRange(current.getRow(), current.getColumn()) && (board.getPiece(current) == null)) {
-                    if (current.getRow() < 8) {
-                        moves.add(new ChessMove(pos, current, null));
-                    } else if (current.getRow() == 8) {
-                        moves.add(new ChessMove(pos, current, ChessPiece.PieceType.QUEEN));
-                        moves.add(new ChessMove(pos, current, ChessPiece.PieceType.KNIGHT));
-                        moves.add(new ChessMove(pos, current, ChessPiece.PieceType.ROOK));
-                        moves.add(new ChessMove(pos, current, ChessPiece.PieceType.BISHOP));
-                    }
+                    moves.addAll(addPawnMove(current));
                 }
             }
 
@@ -41,15 +37,8 @@ public class PawnMovesCalculator extends MoveCalculator{
             positions.add(new ChessPosition(row + 1, col + 1));
             positions.add(new ChessPosition(row + 1, col - 1));
             for (ChessPosition current : positions) {
-                if (inRange(current.getRow(),current.getColumn())&&(board.getPiece(current)!= null&&board.getPiece(current).getTeamColor()!= piece.getTeamColor())){
-                    if (current.getRow() < 8) {
-                        moves.add(new ChessMove(pos, current, null));
-                    } else if (current.getRow() == 8) {
-                        moves.add(new ChessMove(pos, current, ChessPiece.PieceType.QUEEN));
-                        moves.add(new ChessMove(pos, current, ChessPiece.PieceType.KNIGHT));
-                        moves.add(new ChessMove(pos, current, ChessPiece.PieceType.ROOK));
-                        moves.add(new ChessMove(pos, current, ChessPiece.PieceType.BISHOP));
-                    }
+                if (inRange(current.getRow(),current.getColumn()) && captureable(board.getPiece(current), piece.getTeamColor())){
+                    moves.addAll(addPawnMove(current));
                 }
             }
         }
@@ -66,14 +55,7 @@ public class PawnMovesCalculator extends MoveCalculator{
 
             for (ChessPosition current : positions) {
                 if (inRange(current.getRow(), current.getColumn()) && (board.getPiece(current) == null)) {
-                    if (current.getRow() > 1) {
-                        moves.add(new ChessMove(pos, current, null));
-                    } else if (current.getRow() == 1) {
-                        moves.add(new ChessMove(pos, current, ChessPiece.PieceType.QUEEN));
-                        moves.add(new ChessMove(pos, current, ChessPiece.PieceType.KNIGHT));
-                        moves.add(new ChessMove(pos, current, ChessPiece.PieceType.ROOK));
-                        moves.add(new ChessMove(pos, current, ChessPiece.PieceType.BISHOP));
-                    }
+                    moves.addAll(addPawnMove(current));
                 }
             }
 
@@ -82,20 +64,28 @@ public class PawnMovesCalculator extends MoveCalculator{
             positions.add(new ChessPosition(row - 1, col + 1));
             positions.add(new ChessPosition(row - 1, col - 1));
             for (ChessPosition current : positions) {
-                if(inRange(current.getRow(),current.getColumn())&&(board.getPiece(current)!=null&&board.getPiece(current).getTeamColor()!=piece.getTeamColor())){
-                    if (current.getRow() > 1) {
-                        moves.add(new ChessMove(pos, current, null));
-                    } else if (current.getRow() == 1) {
-                        moves.add(new ChessMove(pos, current, ChessPiece.PieceType.QUEEN));
-                        moves.add(new ChessMove(pos, current, ChessPiece.PieceType.KNIGHT));
-                        moves.add(new ChessMove(pos, current, ChessPiece.PieceType.ROOK));
-                        moves.add(new ChessMove(pos, current, ChessPiece.PieceType.BISHOP));
-                    }
+                if(inRange(current.getRow(),current.getColumn()) && captureable(board.getPiece(current), piece.getTeamColor())) {
+                    moves.addAll(addPawnMove(current));
                 }
             }
         }
 
 
+        return moves;
+    }
+
+
+    public Collection<ChessMove> addPawnMove(ChessPosition end){
+        Collection<ChessMove> moves = new ArrayList<>();
+        if ((piece.getTeamColor() == WHITE && row == 7) || (piece.getTeamColor() == BLACK && row == 2)) {
+            moves.add(new ChessMove(pos, end, ChessPiece.PieceType.QUEEN));
+            moves.add(new ChessMove(pos, end, ChessPiece.PieceType.BISHOP));
+            moves.add(new ChessMove(pos, end, ChessPiece.PieceType.ROOK));
+            moves.add(new ChessMove(pos, end, ChessPiece.PieceType.KNIGHT));
+        }
+        else {
+            moves.add(new ChessMove(pos, end, null));
+        }
         return moves;
     }
 }
