@@ -194,10 +194,7 @@ public class ChessGame implements Cloneable{
      */
     public boolean isInStalemate(TeamColor teamColor) {
         Collection<ChessMove> totalValidMoves = teamValidMoves(teamColor);
-        if (totalValidMoves.isEmpty() && !isInCheck(teamColor)) {
-            return true;
-        }
-        return false;
+        return totalValidMoves.isEmpty() && !isInCheck(teamColor);
     }
 
     /**
