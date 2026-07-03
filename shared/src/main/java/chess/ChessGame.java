@@ -76,7 +76,6 @@ public class ChessGame implements Cloneable{
             }
         }
 
-        System.out.println(allValidMoves);
         return allValidMoves;
     }
 
