@@ -60,18 +60,13 @@ public class ChessGame implements Cloneable{
         Collection<ChessMove> allValidMoves = new ArrayList<>();
 
 
-        //debug
-        System.out.println("all potential moves: " + potentialMoves);
-        System.out.println("Current king position: " + getKingPosition(p.getTeamColor()));
-
-
-
         if (p == null) {
             return null;
         }
         else {
-            ChessGame gameclone = clone();
+            ChessGame gameclone;
             for (ChessMove move : potentialMoves) {
+                gameclone = clone();
 
                 //add to valid moves if it doesn't leave own king in check
                 gameclone.makeMoveWithoutChecking(move, p, gameclone.getBoard());
