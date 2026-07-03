@@ -140,10 +140,8 @@ public class ChessGame implements Cloneable{
                 //checks if the current piece is opponent's color, if so, if any of their potential moves get them to king's position
                 if (currentPiece!=null && currentPiece.getTeamColor()!=teamColor) {
                     currentMoves = currentPiece.pieceMoves(chessboard, currentPos);
-                    for (ChessMove move : currentMoves) {
-                        if (move.getEndPosition().equals(kingPos)) {
-                            return true;
-                        }
+                    if (moveTakesKing(currentMoves, kingPos)){
+                        return true;
                     }
 
                 }
@@ -153,6 +151,14 @@ public class ChessGame implements Cloneable{
         return false;
     }
 
+    public boolean moveTakesKing(Collection<ChessMove> currentMoves, ChessPosition king){//checks if the current piece is opponent's color, if so, if any of their potential moves get them to king's position
+        for (ChessMove move : currentMoves) {
+            if (move.getEndPosition().equals(king)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public ChessPosition getKingPosition(TeamColor color) {
         ChessPiece current;

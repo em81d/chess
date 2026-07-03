@@ -15,7 +15,9 @@ public class KnightMovesCalculator extends MoveCalculator{
     public Collection<ChessMove> calculateKnight() {
         Collection<ChessMove> moves = new ArrayList<>();
 
-        List<ChessPosition> positions = new ArrayList<>(List.of(new ChessPosition(row+2, col+1), new ChessPosition(row+2, col-1), new ChessPosition(row-2, col+1), new ChessPosition(row-2, col-1)));
+        List<ChessPosition> positions = new ArrayList<>(List.of(new ChessPosition(row+2, col+1), new ChessPosition(row+2, col-1)));
+        positions.add(new ChessPosition(row-2, col+1));
+        positions.add(new ChessPosition(row-2, col-1));
         positions.add(new ChessPosition(row+1, col+2));
         positions.add(new ChessPosition(row-1, col+2));
         positions.add(new ChessPosition(row+1, col-2));
@@ -24,7 +26,7 @@ public class KnightMovesCalculator extends MoveCalculator{
 
         for (ChessPosition current : positions) {
 
-            if (inRange(current.getRow(), current.getColumn()) && (board.getPiece(current) == null || board.getPiece(current).getTeamColor() != piece.getTeamColor())){
+            if (inRange(current.getRow(),current.getColumn())&&(board.getPiece(current)==null||board.getPiece(current).getTeamColor()!=piece.getTeamColor())){
                 moves.add(new ChessMove(pos, current, null));
             }
 
