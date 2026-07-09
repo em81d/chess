@@ -22,24 +22,23 @@ public class GameDAOMemory implements GameDAO {
     }
 
     @Override
-    public GameData updateGame(int gameID, ChessGame g) {
-        GameData gd = null;
+    public GameData updateGame(int gameID, ChessGame g) throws DataAccessException {
         for (GameData game : games) {
             if (game.gameID() == gameID) {
-                gd = game;
+                return new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), g );
             }
         }
-        return (gd == null) ? null : new GameData(gd.gameID(), gd.whiteUsername(), gd.blackUsername(), gd.gameName(), g );
+        throw new DataAccessException("gameID does not exist");
     }
 
     @Override
-    public GameData getGame(int gameID) {
+    public GameData getGame(int gameID) throws DataAccessException{
         for (GameData game : games) {
             if (game.gameID() == gameID) {
                 return game;
             }
         }
-        return null;
+        throw new DataAccessException("game does not exist");
     }
 
     @Override

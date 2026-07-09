@@ -20,12 +20,12 @@ public class UserDAOMemory implements UserDAO {
     }
 
     @Override
-    public UserData getUser(String username) {
+    public UserData getUser(String username) throws DataAccessException{
         for (UserData user : users) {
             if (user.username() == username) {
                 return user;
             }
         }
-        return null;
+        throw new DataAccessException("username is not associated with a user");
     }
 }

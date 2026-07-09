@@ -18,13 +18,13 @@ public class AuthDAOMemory implements AuthDAO {
     }
 
     @Override
-    public AuthData getAuth(String authToken) {
+    public AuthData getAuth(String authToken) throws DataAccessException{
         for (AuthData auth : auths) {
             if (auth.authToken() == authToken) {
                 return auth;
             }
         }
-        return null;
+        throw new DataAccessException("auth token does not exist");
     }
 
 
