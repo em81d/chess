@@ -1,5 +1,10 @@
 package dataaccess;
 
+import chess.ChessGame;
+import model.GameData;
+
+import java.util.Collection;
+
 public interface GameDAO {
     /*
             createGame: Create a new game.
@@ -10,4 +15,9 @@ public interface GameDAO {
 
             where does clear DAO go??
     */
+
+    void createGame(GameData d);
+    GameData getGame(int gameID);
+    Collection<GameData> listGames();
+    GameData updateGame(int gameID, ChessGame game);
 }
