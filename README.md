@@ -1,4 +1,4 @@
-# ♕ BYU CS 240 Chess
+# ♕ BYU CS 240 Chess (IN PROGRESS - est. completion Aug 1 2026)
 
 This project demonstrates mastery of proper software design, client/server architecture, networking using HTTP and WebSocket, database persistence, unit testing, serialization, and security.
 
@@ -16,17 +16,10 @@ The application has three modules.
 - **Server**: The command line program that listens for network requests from the client and manages users and games.
 - **Shared**: Code that is used by both the client and the server. This includes the rules of chess and tracking the state of a game.
 
-## Starter Code
-
-As you create your chess application you will move through specific phases of development. This starts with implementing the moves of chess and finishes with sending game moves over the network between your client and server. You will start each phase by copying course provided [starter-code](starter-code/) for that phase into the source code of the project. Do not copy a phases' starter code before you are ready to begin work on that phase.
-
-## IntelliJ Support
-
-Open the project directory in IntelliJ in order to develop, run, and debug your code using an IDE.
 
 ## Maven Support
 
-You can use the following commands to build, test, package, and run your code.
+You can use the following commands to build, test, package, and run.
 
 | Command                    | Description                                     |
 | -------------------------- | ----------------------------------------------- |
