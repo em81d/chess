@@ -1,9 +1,6 @@
 package service;
 
-import service.RR.LoginRequest;
-import service.RR.LogoutRequest;
-import service.RR.RegisterRequest;
-import service.RR.RegisterResult;
+import service.RR.*;
 
 public class UserService {
 
