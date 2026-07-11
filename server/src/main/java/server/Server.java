@@ -78,7 +78,7 @@ public class Server {
 
     private void logout(Context context) {
         //deserialize
-        LogoutRequest req = new Gson().fromJson(context.body(), LogoutRequest.class);
+        LogoutRequest req = new LogoutRequest(context.header("authorization"));
         LogoutResult res = userService.logout(req);
         context.result(new Gson().toJson(res));
     }

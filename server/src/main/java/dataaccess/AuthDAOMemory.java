@@ -34,7 +34,7 @@ public class AuthDAOMemory implements AuthDAO {
     public void deleteAuth(String authToken) throws DataAccessException{
         AuthData toDelete = null;
         for (AuthData auth  : auths) {
-            if (auth.authToken() == authToken) {
+            if (auth.authToken().equals(authToken)) {
                 toDelete = auth;
             }
         }

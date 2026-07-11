@@ -1,6 +1,6 @@
 package service;
 import dataaccess.*;
-import model.UserData;
+import model.*;
 import service.RR.*;
 
 public class UserService {
@@ -26,7 +26,7 @@ public class UserService {
             return new RegisterResult(username, "", 403);
         }
         catch (DataAccessException e) {
-            System.out.println("printing exception thrown in UserService: " + e);
+//            System.out.println("printing exception thrown in UserService: " + e);
             userDao.createUser(new UserData(username, password, email));
             String authToken = authDao.createAuth(username);
             return new RegisterResult(username, authToken, 200);
@@ -34,10 +34,35 @@ public class UserService {
 
     }
     public LoginResult login(LoginRequest loginRequest) {
-        return new LoginResult("u", "a", 299);
+        String username = loginRequest.username();
+        String password = loginRequest.password();
+
+        try {
+            UserData user = userDao.getUser(username);
+            if (password.equals(user.password())) {
+                return new LoginResult(username, authDao.createAuth(username), 200);
+            }
+            else {
+                return new LoginResult(username, "", 401);
+            }
+
+        }
+        catch (DataAccessException e) {
+            return new LoginResult(username, "", 401);
+        }
     }
+
+
     public LogoutResult logout(LogoutRequest logoutRequest) {
-        return new LogoutResult(299);
+        String authToken = logoutRequest.authToken();
+        try {
+            authDao.getAuth(authToken);
+            authDao.deleteAuth(authToken);
+            return new LogoutResult(200);
+        }
+        catch (DataAccessException e) {
+            return new LogoutResult(401);
+        }
     }
 }
 
