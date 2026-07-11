@@ -5,5 +5,8 @@ import service.RR.ClearRequest;
 
 public class ClearService {
 
-    public ClearResult clear(ClearRequest clearRequest) {}
+    public ClearResult clear(ClearRequest clearRequest) {
+
+        return new ClearResult(200);
+    }
 }
