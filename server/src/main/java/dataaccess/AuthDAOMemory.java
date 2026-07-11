@@ -13,8 +13,10 @@ public class AuthDAOMemory implements AuthDAO {
     }
 
     @Override
-    public void createAuth(String username) {
-        auths.add(new AuthData(generateToken(), username));
+    public String createAuth(String username) {
+        String auth = generateToken();
+        auths.add(new AuthData(auth, username));
+        return auth;
     }
 
     @Override
