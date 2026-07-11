@@ -53,12 +53,7 @@ public class Server {
         //deserialize
         RegisterRequest req = new Gson().fromJson(context.body(), RegisterRequest.class);
         RegisterResult res = userService.register(req);
-        if (res.status()==403) {
-            context.status(403);
-        }
-        else {
-            context.status(200);
-        }
+        context.status(res.status());
         context.result(new Gson().toJson(res));
     }
 
@@ -66,6 +61,7 @@ public class Server {
 //        deserialize
         ClearRequest req = new Gson().fromJson(context.body(), ClearRequest.class);
         ClearResult res = clearService.clear(req);
+        context.status(res.status());
         context.result(new Gson().toJson(res));
     }
 
@@ -73,6 +69,7 @@ public class Server {
         //deserialize
         LoginRequest req = new Gson().fromJson(context.body(), LoginRequest.class);
         LoginResult res = userService.login(req);
+        context.status(res.status());
         context.result(new Gson().toJson(res));
     }
 
@@ -80,6 +77,7 @@ public class Server {
         //deserialize
         LogoutRequest req = new LogoutRequest(context.header("authorization"));
         LogoutResult res = userService.logout(req);
+        context.status(res.status());
         context.result(new Gson().toJson(res));
     }
 
@@ -87,6 +85,7 @@ public class Server {
         //deserialize
         CreateRequest req = new Gson().fromJson(context.body(), CreateRequest.class);
         CreateResult res = gameService.createGame(req);
+        context.status(res.status());
         context.result(new Gson().toJson(res));
     }
 
@@ -95,6 +94,7 @@ public class Server {
         ListRequest req = new ListRequest(context.header("authorization"));
 //        ListRequest req = new Gson().fromJson(context.body(), ListRequest.class);
         ListResult res = gameService.listGames(req);
+        context.status(res.status());
         context.result(new Gson().toJson(res));
     }
 
@@ -102,6 +102,7 @@ public class Server {
         //deserialize
         JoinRequest req = new Gson().fromJson(context.body(), JoinRequest.class);
         JoinResult res = gameService.joinGame(req);
+        context.status(res.status());
         context.result(new Gson().toJson(res));
     }
 
