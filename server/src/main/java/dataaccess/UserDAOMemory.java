@@ -28,4 +28,10 @@ public class UserDAOMemory implements UserDAO {
         }
         throw new DataAccessException("username is not associated with a user");
     }
+
+    @Override
+    public void clearUsers() {
+        users.removeAll(users);
+    }
+
 }

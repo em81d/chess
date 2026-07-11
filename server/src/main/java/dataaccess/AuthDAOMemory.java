@@ -50,4 +50,9 @@ public class AuthDAOMemory implements AuthDAO {
         return UUID.randomUUID().toString();
     }
 
+    @Override
+    public void clearAuths() {
+        auths.removeAll(auths);
+    }
+
 }

@@ -19,7 +19,9 @@ public class ClearService {
     }
 
     public ClearResult clear(ClearRequest clearRequest) {
-
-        return new ClearResult(200);
+        gameDao.clearGames();
+        userDao.clearUsers();
+        authDao.clearAuths();
+        return new ClearResult(280);
     }
 }

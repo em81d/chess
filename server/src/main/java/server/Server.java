@@ -1,5 +1,6 @@
 package server;
 import com.google.gson.Gson;
+import dataaccess.*;
 import dataaccess.AuthDAOMemory;
 import dataaccess.GameDAOMemory;
 import dataaccess.UserDAOMemory;
@@ -17,11 +18,17 @@ public class Server {
     private final UserService userService;
     private final GameService gameService;
     private final ClearService clearService;
+    private final UserDAO userDao;
+    private final AuthDAO authDao;
+    private final GameDAO gameDao;
 
     public Server() {
-        userService = new UserService(new UserDAOMemory(), new AuthDAOMemory());
-        gameService = new GameService(new UserDAOMemory(), new AuthDAOMemory(), new GameDAOMemory());
-        clearService = new ClearService(new GameDAOMemory(), new AuthDAOMemory(), new UserDAOMemory());
+        userDao = new UserDAOMemory();
+        gameDao = new GameDAOMemory();
+        authDao = new AuthDAOMemory();
+        userService = new UserService(userDao, authDao);
+        gameService = new GameService(userDao, authDao, gameDao);
+        clearService = new ClearService(gameDao, userDao, authDao);
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .post("/user", this::register)
@@ -32,10 +39,7 @@ public class Server {
                 .post("/game", this::create)
                 .put("/game", this::join);
 
-
         // Register your endpoints and exception handlers here.
-
-
 
     }
 

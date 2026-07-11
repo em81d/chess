@@ -20,4 +20,5 @@ public interface GameDAO {
     GameData getGame(int gameID) throws DataAccessException;
     Collection<GameData> listGames();
     GameData updateGame(int gameID, ChessGame game) throws DataAccessException;
+    void clearGames();
 }

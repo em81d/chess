@@ -46,4 +46,9 @@ public class GameDAOMemory implements GameDAO {
         return games;
     }
 
+    @Override
+    public void clearGames() {
+        games.removeAll(games);
+    }
+
 }
