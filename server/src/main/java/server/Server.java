@@ -1,5 +1,6 @@
 package server;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import dataaccess.*;
 import io.javalin.*;
 import io.javalin.http.Context;
@@ -82,8 +83,13 @@ public class Server {
     }
 
     private void create(Context context) {
-        //deserialize
-        CreateRequest req = new Gson().fromJson(context.body(), CreateRequest.class);
+        String authToken = context.header("authorization");
+
+        //getting the game name
+        JsonObject json = new Gson().fromJson(context.body(), JsonObject.class);
+        String gameName = json.get("gameName").getAsString();
+
+        CreateRequest req = new CreateRequest(authToken, gameName);
         CreateResult res = gameService.createGame(req);
         context.status(res.status());
         context.result(new Gson().toJson(res));

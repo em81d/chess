@@ -25,6 +25,7 @@ public class GameService {
     }
     public CreateResult createGame(CreateRequest createRequest) {
         String authToken = createRequest.authToken();
+        System.out.println("auth token: " + authToken);
         try {
             authDao.getAuth(authToken);
             int id = gameDao.createGame(createRequest.gameName());
@@ -35,6 +36,8 @@ public class GameService {
         }
 
     }
+
+    //list games eventually needs to return the games in the format specified rather than printing out the whole game board
     public ListResult listGames(ListRequest listRequest) { //do I throw the data access exception back to the server or handle it here by returning a failure status code?
         String authToken = listRequest.authToken();
         try {
