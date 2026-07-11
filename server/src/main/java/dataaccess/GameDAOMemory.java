@@ -10,15 +10,21 @@ public class GameDAOMemory implements GameDAO {
 
 
     private ArrayList<GameData> games;
+    int gameCount;
 
     public GameDAOMemory() {
         games = new ArrayList<>();
+        gameCount = 0;
     }
 
 
     @Override
-    public void createGame(GameData d) {
-        games.add(d);
+    public int createGame(String name) {
+        int id = newGameId();
+        GameData gd = new GameData(id, null, null, name, new ChessGame());
+        games.add(gd);
+        gameCount++;
+        return id;
     }
 
     @Override
@@ -49,6 +55,10 @@ public class GameDAOMemory implements GameDAO {
     @Override
     public void clearGames() {
         games.removeAll(games);
+    }
+
+    public int newGameId() {
+        return gameCount + 100;
     }
 
 }

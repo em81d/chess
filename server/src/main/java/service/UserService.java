@@ -26,6 +26,7 @@ public class UserService {
             return new RegisterResult(username, "", 403);
         }
         catch (DataAccessException e) {
+            System.out.println("printing exception thrown in UserService: " + e);
             userDao.createUser(new UserData(username, password, email));
             String authToken = authDao.createAuth(username);
             return new RegisterResult(username, authToken, 200);

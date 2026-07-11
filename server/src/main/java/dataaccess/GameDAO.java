@@ -16,7 +16,7 @@ public interface GameDAO {
             where does clear DAO go??
     */
 
-    void createGame(GameData d);
+    int createGame(String name);
     GameData getGame(int gameID) throws DataAccessException;
     Collection<GameData> listGames();
     GameData updateGame(int gameID, ChessGame game) throws DataAccessException;

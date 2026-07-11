@@ -1,16 +1,11 @@
 package server;
 import com.google.gson.Gson;
 import dataaccess.*;
-import dataaccess.AuthDAOMemory;
-import dataaccess.GameDAOMemory;
-import dataaccess.UserDAOMemory;
 import io.javalin.*;
 import io.javalin.http.Context;
 import org.jetbrains.annotations.NotNull;
 import service.RR.*;
-import service.ClearService;
-import service.UserService;
-import service.GameService;
+import service.*;
 
 public class Server {
 
@@ -58,6 +53,12 @@ public class Server {
         //deserialize
         RegisterRequest req = new Gson().fromJson(context.body(), RegisterRequest.class);
         RegisterResult res = userService.register(req);
+        if (res.status()==403) {
+            context.status(403);
+        }
+        else {
+            context.status(200);
+        }
         context.result(new Gson().toJson(res));
     }
 
@@ -91,7 +92,8 @@ public class Server {
 
     private void list(Context context) {
         //deserialize
-        ListRequest req = new Gson().fromJson(context.body(), ListRequest.class);
+        ListRequest req = new ListRequest(context.header("authorization"));
+//        ListRequest req = new Gson().fromJson(context.body(), ListRequest.class);
         ListResult res = gameService.listGames(req);
         context.result(new Gson().toJson(res));
     }

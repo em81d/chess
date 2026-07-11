@@ -1,8 +1,12 @@
 package service;
 import dataaccess.*;
+import model.AuthData;
+import model.GameData;
 import service.RR.*;
 
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class GameService {
 
@@ -20,9 +24,26 @@ public class GameService {
         return new JoinResult(299);
     }
     public CreateResult createGame(CreateRequest createRequest) {
-        return new CreateResult(12345, 299);
+        String authToken = createRequest.authToken();
+        try {
+            authDao.getAuth(authToken);
+            int id = gameDao.createGame(createRequest.gameName());
+            return new CreateResult(id, 200);
+        }
+        catch (DataAccessException e) {
+            return new CreateResult(-1, 401);
+        }
+
     }
-    public ListResult listGames(ListRequest listRequest) {
-        return new ListResult(new ArrayList<>(), 299);
+    public ListResult listGames(ListRequest listRequest) { //do I throw the data access exception back to the server or handle it here by returning a failure status code?
+        String authToken = listRequest.authToken();
+        try {
+            authDao.getAuth(authToken);
+            return new ListResult(gameDao.listGames(), 200);
+        }
+        catch (DataAccessException e){
+            return new ListResult(null, 401);
+        }
+
     }
 }
