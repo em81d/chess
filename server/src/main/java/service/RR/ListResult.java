@@ -2,5 +2,5 @@ package service.RR;
 import model.GameData;
 import java.util.Collection;
 
-public record ListResult(Collection<GameData> games) {
+public record ListResult(Collection<GameData> games, int status) {
 }

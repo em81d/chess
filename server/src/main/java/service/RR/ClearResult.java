@@ -1,4 +1,4 @@
 package service.RR;
 
-public record ClearResult() {
+public record ClearResult(int status) {
 }

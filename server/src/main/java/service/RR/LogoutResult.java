@@ -1,4 +1,4 @@
 package service.RR;
 
-public record LogoutResult() {
+public record LogoutResult(int status) {
 }

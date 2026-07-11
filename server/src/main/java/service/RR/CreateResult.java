@@ -1,4 +1,4 @@
 package service.RR;
 
-public record CreateResult(int gameID) {
+public record CreateResult(int gameID, int status) {
 }

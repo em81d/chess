@@ -1,4 +1,4 @@
 package service.RR;
 
-public record JoinResult() {
+public record JoinResult(int status) {
 }
