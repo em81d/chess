@@ -21,11 +21,53 @@ public class GameService {
     }
 
     public JoinResult joinGame(JoinRequest joinRequest) {
-        return new JoinResult(299);
+        String authToken = joinRequest.authToken();
+        AuthData auth;
+        try {
+            auth = authDao.getAuth(authToken);
+        }
+        catch (DataAccessException e) {
+            //unauthorized - no auth token
+            return new JoinResult(401);
+        }
+
+        int gameID = joinRequest.gameID();
+        GameData game;
+        try  {
+            game = gameDao.getGame(gameID);
+        }
+        catch (DataAccessException e){
+            //bad request - game with that id does not exist
+            return new JoinResult(400);
+        }
+        //also needs to return a 400 if no player color
+        if (joinRequest.color()!=null && (joinRequest.color()=="WHITE" || joinRequest.color()=="BLACK")) {
+            return new JoinResult(400);
+        }
+
+        try {
+            if (joinRequest.color()=="WHITE" && game.whiteUsername()==null) {
+                gameDao.updateGame(joinRequest.gameID(), joinRequest.color(), auth.username());
+            }
+            else if (joinRequest.color()=="BLACK" && game.blackUsername()==null) {
+                gameDao.updateGame(joinRequest.gameID(), joinRequest.color(), auth.username());
+            }
+            else {
+                //already taken
+                return new JoinResult(403);
+            }
+        }
+        catch (DataAccessException e){
+            //this should be unnecessary but I think it has to catch it since update game throws it
+            return new JoinResult(400);
+        }
+
+        return new JoinResult(200);
     }
+
     public CreateResult createGame(CreateRequest createRequest) {
         String authToken = createRequest.authToken();
-        System.out.println("auth token: " + authToken);
+//        System.out.println("auth token: " + authToken);
         try {
             authDao.getAuth(authToken);
             int id = gameDao.createGame(createRequest.gameName());

@@ -20,28 +20,24 @@ public class AuthDAOMemory implements AuthDAO {
     }
 
     @Override
-    public AuthData getAuth(String authToken) throws DataAccessException{
+    public AuthData getAuth(String authToken){
         for (AuthData auth : auths) {
             if (auth.authToken().equals(authToken)) {
                 return auth;
             }
         }
-        throw new DataAccessException("auth token does not exist");
+        return null;
     }
 
 
     @Override
-    public void deleteAuth(String authToken) throws DataAccessException{
+    public void deleteAuth(String authToken){
         AuthData toDelete = null;
         for (AuthData auth  : auths) {
             if (auth.authToken().equals(authToken)) {
                 toDelete = auth;
             }
         }
-
-
-        if (toDelete == null) { throw new DataAccessException("tried to delete nonexisting auth"); } else { auths.remove(toDelete); }
-
     }
 
 

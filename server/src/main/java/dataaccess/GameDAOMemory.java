@@ -28,23 +28,41 @@ public class GameDAOMemory implements GameDAO {
     }
 
     @Override
-    public GameData updateGame(int gameID, ChessGame g) throws DataAccessException {
+    public GameData updateGame(int gameID, ChessGame g){
         for (GameData game : games) {
             if (game.gameID() == gameID) {
                 return new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), g );
             }
         }
-        throw new DataAccessException("gameID does not exist");
+        return null; //????
     }
 
     @Override
-    public GameData getGame(int gameID) throws DataAccessException{
+    public GameData updateGame(int gameID, String color, String username) {
+        for (GameData game : games) {
+            if (game.gameID() == gameID) {
+                if (color.equals("WHITE")) {
+                    game = new GameData(gameID, username, game.blackUsername(), game.gameName(), game.game() );
+                    return game;
+                }
+                else if (color.equals("BLACK")) {
+                    game = new GameData(gameID, game.whiteUsername(), username, game.gameName(), game.game());
+                    return game;
+                }
+            }
+        }
+//        throw new DataAccessException("gameID does not exist");
+        return null; //????
+    }
+
+    @Override
+    public GameData getGame(int gameID){
         for (GameData game : games) {
             if (game.gameID() == gameID) {
                 return game;
             }
         }
-        throw new DataAccessException("game does not exist");
+        return null;
     }
 
     @Override

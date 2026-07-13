@@ -98,7 +98,7 @@ public class Server {
     private void list(Context context) {
         //deserialize
         ListRequest req = new ListRequest(context.header("authorization"));
-//        ListRequest req = new Gson().fromJson(context.body(), ListRequest.class);
+//        ListRequest req = new Gson().fromJson(context.header("authorization"), ListRequest.class);
         ListResult res = gameService.listGames(req);
         context.status(res.status());
         context.result(new Gson().toJson(res));
@@ -106,7 +106,12 @@ public class Server {
 
     private void join(Context context) {
         //deserialize
-        JoinRequest req = new Gson().fromJson(context.body(), JoinRequest.class);
+        String authToken = context.header("authorization");
+        JsonObject json = new Gson().fromJson(context.body(), JsonObject.class);
+        int gameID = json.get("gameID").getAsInt();
+        String color = json.get("playerColor").getAsString();
+
+        JoinRequest req = new JoinRequest(authToken, color, gameID);
         JoinResult res = gameService.joinGame(req);
         context.status(res.status());
         context.result(new Gson().toJson(res));

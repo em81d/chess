@@ -9,8 +9,8 @@ public interface AuthDAO {
 //    deleteAuth: Delete an authorization so that it is no longer valid.
 
     String createAuth(String username);
-    AuthData getAuth(String authToken) throws DataAccessException;
-    void deleteAuth(String authToken) throws DataAccessException;
+    AuthData getAuth(String authToken);
+    void deleteAuth(String authToken);
     void clearAuths();
 
 }
