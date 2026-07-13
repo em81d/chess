@@ -20,75 +20,64 @@ public class GameService {
         this.gameDao = gameDao;
     }
 
-    public JoinResult joinGame(JoinRequest joinRequest) {
+    public JoinResult joinGame(JoinRequest joinRequest) throws DataAccessException {
         String authToken = joinRequest.authToken();
-        AuthData auth;
-        try {
-            auth = authDao.getAuth(authToken);
+        AuthData auth = authDao.getAuth(authToken);
+        if (auth == null) {
+            throw new DataAccessException("invalid auth token");
         }
-        catch (DataAccessException e) {
-            //unauthorized - no auth token
-            return new JoinResult(401);
-        }
+        //should give status 401 - unauthorized
 
         int gameID = joinRequest.gameID();
-        GameData game;
-        try  {
-            game = gameDao.getGame(gameID);
+        GameData game = gameDao.getGame(gameID);
+        if (game == null || joinRequest.color() == null
+            || (!joinRequest.color().equals("WHITE") && !joinRequest.color().equals("BLACK"))) {
+            throw new DataAccessException("invalid gameID or team color");
         }
-        catch (DataAccessException e){
-            //bad request - game with that id does not exist
-            return new JoinResult(400);
-        }
-        //also needs to return a 400 if no player color
-        if (joinRequest.color()!=null && (joinRequest.color()=="WHITE" || joinRequest.color()=="BLACK")) {
-            return new JoinResult(400);
-        }
+        //should give status 400 - bad request
 
-        try {
-            if (joinRequest.color()=="WHITE" && game.whiteUsername()==null) {
-                gameDao.updateGame(joinRequest.gameID(), joinRequest.color(), auth.username());
-            }
-            else if (joinRequest.color()=="BLACK" && game.blackUsername()==null) {
-                gameDao.updateGame(joinRequest.gameID(), joinRequest.color(), auth.username());
-            }
-            else {
-                //already taken
-                return new JoinResult(403);
-            }
+
+
+        if (joinRequest.color().equals("WHITE") && game.whiteUsername()==null) {
+            gameDao.updateGame(joinRequest.gameID(), joinRequest.color(), auth.username());
         }
-        catch (DataAccessException e){
-            //this should be unnecessary but I think it has to catch it since update game throws it
-            return new JoinResult(400);
+        else if (joinRequest.color()=="BLACK" && game.blackUsername()==null) {
+            gameDao.updateGame(joinRequest.gameID(), joinRequest.color(), auth.username());
+        }
+        else {
+            //already taken exception  - status 403
+            throw new DataAccessException("spot in game already taken by a user");
         }
 
         return new JoinResult(200);
     }
 
-    public CreateResult createGame(CreateRequest createRequest) {
+    public CreateResult createGame(CreateRequest createRequest) throws DataAccessException {
         String authToken = createRequest.authToken();
 //        System.out.println("auth token: " + authToken);
-        try {
-            authDao.getAuth(authToken);
-            int id = gameDao.createGame(createRequest.gameName());
-            return new CreateResult(id, 200);
-        }
-        catch (DataAccessException e) {
-            return new CreateResult(-1, 401);
-        }
 
+        if (authDao.getAuth(authToken) == null) {
+            throw new DataAccessException("invalid auth token.");
+            //401 unauthorized
+        }
+        if (createRequest.gameName() == null) {
+            //400 bad request
+            //I don't think that we need to check whether game name is already taken. game name shouldn't need to
+            //be unique since we have the game id
+            throw new DataAccessException("no game name");
+        }
+        int id = gameDao.createGame(createRequest.gameName());
+        return new CreateResult(id, 200);
     }
 
     //list games eventually needs to return the games in the format specified rather than printing out the whole game board
-    public ListResult listGames(ListRequest listRequest) { //do I throw the data access exception back to the server or handle it here by returning a failure status code?
+    public ListResult listGames(ListRequest listRequest) throws DataAccessException {
         String authToken = listRequest.authToken();
-        try {
-            authDao.getAuth(authToken);
-            return new ListResult(gameDao.listGames(), 200);
-        }
-        catch (DataAccessException e){
-            return new ListResult(null, 401);
+        if (authToken == null || authDao.getAuth(authToken) == null) {
+            throw new DataAccessException("invalid auth token");
+            //401 unauthorized
         }
 
+        return new ListResult(gameDao.listGames(), 200);
     }
 }
