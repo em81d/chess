@@ -1,5 +1,6 @@
 package server;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dataaccess.*;
 import dataaccess.exceptions.AlreadyTakenException;
@@ -98,12 +99,16 @@ public class Server {
 
         //getting the game name
         JsonObject json = new Gson().fromJson(context.body(), JsonObject.class);
-        String gameName = json.get("gameName").getAsString();
-
-        CreateRequest req = new CreateRequest(authToken, gameName);
-        CreateResult res = gameService.createGame(req);
-        context.status(res.status());
-        context.result(new Gson().toJson(res));
+        JsonElement gameName = json.get("gameName");
+        if (gameName==null) {
+            throw new BadRequestException("game name cannot be empty");
+        }
+        else {
+            CreateRequest req = new CreateRequest(authToken, gameName.getAsString());
+            CreateResult res = gameService.createGame(req);
+            context.status(res.status());
+            context.result(new Gson().toJson(res));
+        }
     }
 
     private void list(Context context) throws DataAccessException {
@@ -119,6 +124,11 @@ public class Server {
         //deserialize
         String authToken = context.header("authorization");
         JsonObject json = new Gson().fromJson(context.body(), JsonObject.class);
+
+        if (json.get("gameID") == null || json.get("playerColor") == null) {
+            throw new BadRequestException("must include a game ID and player color");
+        }
+
         int gameID = json.get("gameID").getAsInt();
         String color = json.get("playerColor").getAsString();
 

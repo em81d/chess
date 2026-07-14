@@ -38,17 +38,15 @@ public class GameDAOMemory implements GameDAO {
     }
 
     @Override
-    public GameData updateGame(int gameID, String color, String username) {
-        for (GameData game : games) {
-            if (game.gameID() == gameID) {
+    public GameData updateGame(GameData game, String color, String username) {
+        for (int i=0; i<games.size(); i++) {
+            if (games.get(i).gameID() == game.gameID()) {
                 if (color.equals("WHITE")) {
-                    game = new GameData(gameID, username, game.blackUsername(), game.gameName(), game.game() );
-                    return game;
+                    games.set(i, new GameData(game.gameID(), username, game.blackUsername(), game.gameName(), game.game()));
+                } else { // if (color.equals("BLACK")) {
+                    games.set(i, new GameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game()));
                 }
-                else if (color.equals("BLACK")) {
-                    game = new GameData(gameID, game.whiteUsername(), username, game.gameName(), game.game());
-                    return game;
-                }
+                return games.get(i);
             }
         }
 //        throw new DataAccessException("gameID does not exist");

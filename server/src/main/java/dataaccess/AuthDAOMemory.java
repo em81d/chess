@@ -38,6 +38,10 @@ public class AuthDAOMemory implements AuthDAO {
                 toDelete = auth;
             }
         }
+
+        if (toDelete != null) {
+            auths.remove(toDelete);
+        }
     }
 
 

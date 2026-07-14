@@ -38,10 +38,10 @@ public class GameService {
 
 
         if (joinRequest.color().equals("WHITE") && game.whiteUsername()==null) {
-            gameDao.updateGame(joinRequest.gameID(), joinRequest.color(), auth.username());
+            gameDao.updateGame(game, joinRequest.color(), auth.username());
         }
         else if (joinRequest.color()=="BLACK" && game.blackUsername()==null) {
-            gameDao.updateGame(joinRequest.gameID(), joinRequest.color(), auth.username());
+            gameDao.updateGame(game, joinRequest.color(), auth.username());
         }
         else {
             //already taken exception  - status 403
@@ -73,7 +73,7 @@ public class GameService {
     public ListResult listGames(ListRequest listRequest) throws NoAuthException {
         String authToken = listRequest.authToken();
         if (authToken == null || authDao.getAuth(authToken) == null) {
-            throw new NoAuthException("invalid auth token");
+            throw new NoAuthException("invalid auth token or no auth token");
             //401 unauthorized
         }
 

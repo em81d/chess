@@ -63,7 +63,6 @@ public class UserService {
 
     public LogoutResult logout(LogoutRequest logoutRequest) throws NoAuthException {
         String authToken = logoutRequest.authToken();
-        //shouldn't be a problem if authToken is null? it will return 401 either way?
 
         if (authDao.getAuth(authToken) == null) {
             throw new NoAuthException("no auth token");

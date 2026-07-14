@@ -20,6 +20,6 @@ public interface GameDAO {
     GameData getGame(int gameID);
     Collection<GameData> listGames();
     GameData updateGame(int gameID, ChessGame game);
-    GameData updateGame(int gameID, String color, String username);
+    GameData updateGame(GameData game, String color, String username);
     void clearGames();
 }
