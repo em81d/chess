@@ -1,4 +1,4 @@
-package service.reqRes;
+package service.reqres;
 
 public record RegisterResult(String username, String authToken, int status) {
 }

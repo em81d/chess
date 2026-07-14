@@ -1,4 +1,4 @@
-package service.reqRes;
+package service.reqres;
 
 public record CreateResult(int gameID, int status) {
 }

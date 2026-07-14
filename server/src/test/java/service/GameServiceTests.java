@@ -8,7 +8,7 @@ import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.NoAuthException;
 import model.AbbreviatedGame;
 import org.junit.jupiter.api.*;
-import service.reqRes.*;
+import service.reqres.*;
 
 import java.util.ArrayList;
 

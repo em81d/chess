@@ -5,7 +5,7 @@ import dataaccess.GameDAOMemory;
 import dataaccess.UserDAOMemory;
 import dataaccess.exceptions.DataAccessException;
 import org.junit.jupiter.api.*;
-import service.reqRes.*;
+import service.reqres.*;
 
 
 public class ClearServiceTest {

@@ -6,7 +6,7 @@ import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.NoAuthException;
 import model.AuthData;
 import model.GameData;
-import service.reqRes.*;
+import service.reqres.*;
 
 import java.util.Objects;
 

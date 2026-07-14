@@ -9,7 +9,7 @@ import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.NoAuthException;
 import io.javalin.*;
 import io.javalin.http.Context;
-import service.reqRes.*;
+import service.reqres.*;
 import service.*;
 
 public class Server {

@@ -2,8 +2,8 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
-import service.reqRes.ClearRequest;
-import service.reqRes.ClearResult;
+import service.reqres.ClearRequest;
+import service.reqres.ClearResult;
 
 import java.util.Objects;
 

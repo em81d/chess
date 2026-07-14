@@ -5,7 +5,7 @@ import dataaccess.exceptions.BadRequestException;
 import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.NoAuthException;
 import model.*;
-import service.reqRes.*;
+import service.reqres.*;
 
 import java.util.Objects;
 
