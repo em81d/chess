@@ -1,5 +1,9 @@
 package service;
 import dataaccess.*;
+import dataaccess.exceptions.AlreadyTakenException;
+import dataaccess.exceptions.BadRequestException;
+import dataaccess.exceptions.DataAccessException;
+import dataaccess.exceptions.NoAuthException;
 import model.*;
 import service.RR.*;
 
@@ -20,11 +24,11 @@ public class UserService {
         String email = registerRequest.email();
 
         if (userDao.getUser(username) != null) {
-            throw new DataAccessException("username already exists");
+            throw new AlreadyTakenException("username already exists");
             //403 already taken/forbidden
         }
         if (password == null || email == null) {
-            throw new DataAccessException("password or email blank");
+            throw new BadRequestException("password or email blank");
             //400 bad request
         }
 
@@ -40,7 +44,7 @@ public class UserService {
 
         if (username == null || password == null) {
             //400 bad request
-            throw new DataAccessException("username and password are required fields.");
+            throw new BadRequestException("username and password are required fields.");
         }
 
         UserData user = userDao.getUser(username);
@@ -50,19 +54,19 @@ public class UserService {
             return new LoginResult(username, authDao.createAuth(username), 200);
         }
         else {
-            throw new DataAccessException("wrong username or password.");
+            throw new NoAuthException("wrong username or password.");
             //401 unauthorized
         }
 
     }
 
 
-    public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException {
+    public LogoutResult logout(LogoutRequest logoutRequest) throws NoAuthException {
         String authToken = logoutRequest.authToken();
         //shouldn't be a problem if authToken is null? it will return 401 either way?
 
         if (authDao.getAuth(authToken) == null) {
-            throw new DataAccessException("no auth token");
+            throw new NoAuthException("no auth token");
             //401 unauthorized
         }
 

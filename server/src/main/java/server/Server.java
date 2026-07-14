@@ -2,11 +2,18 @@ package server;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import dataaccess.*;
+import dataaccess.exceptions.AlreadyTakenException;
+import dataaccess.exceptions.BadRequestException;
+import dataaccess.exceptions.DataAccessException;
+import dataaccess.exceptions.NoAuthException;
 import io.javalin.*;
 import io.javalin.http.Context;
 import org.jetbrains.annotations.NotNull;
 import service.RR.*;
 import service.*;
+import dataaccess.exceptions.*;
+
+import javax.xml.crypto.Data;
 
 public class Server {
 
@@ -33,7 +40,11 @@ public class Server {
                 .delete("/session", this::logout)
                 .get("/game", this::list)
                 .post("/game", this::create)
-                .put("/game", this::join);
+                .put("/game", this::join)
+                .error(404, this::notFound)
+                .exception(BadRequestException.class, this::badRequest)
+                .exception(AlreadyTakenException.class, this::alreadyTaken)
+                .exception(NoAuthException.class, this::noAuth);
 
         // Register your endpoints and exception handlers here.
 
@@ -50,7 +61,7 @@ public class Server {
         return javalin.port();
     }
 
-    private void register(Context context) {
+    private void register(Context context) throws DataAccessException {
         //deserialize
         RegisterRequest req = new Gson().fromJson(context.body(), RegisterRequest.class);
         RegisterResult res = userService.register(req);
@@ -66,7 +77,7 @@ public class Server {
         context.result(new Gson().toJson(res));
     }
 
-    private void login(Context context) {
+    private void login(Context context) throws DataAccessException {
         //deserialize
         LoginRequest req = new Gson().fromJson(context.body(), LoginRequest.class);
         LoginResult res = userService.login(req);
@@ -74,7 +85,7 @@ public class Server {
         context.result(new Gson().toJson(res));
     }
 
-    private void logout(Context context) {
+    private void logout(Context context) throws DataAccessException {
         //deserialize
         LogoutRequest req = new LogoutRequest(context.header("authorization"));
         LogoutResult res = userService.logout(req);
@@ -82,7 +93,7 @@ public class Server {
         context.result(new Gson().toJson(res));
     }
 
-    private void create(Context context) {
+    private void create(Context context) throws DataAccessException {
         String authToken = context.header("authorization");
 
         //getting the game name
@@ -95,7 +106,7 @@ public class Server {
         context.result(new Gson().toJson(res));
     }
 
-    private void list(Context context) {
+    private void list(Context context) throws DataAccessException {
         //deserialize
         ListRequest req = new ListRequest(context.header("authorization"));
 //        ListRequest req = new Gson().fromJson(context.header("authorization"), ListRequest.class);
@@ -104,7 +115,7 @@ public class Server {
         context.result(new Gson().toJson(res));
     }
 
-    private void join(Context context) {
+    private void join(Context context) throws DataAccessException {
         //deserialize
         String authToken = context.header("authorization");
         JsonObject json = new Gson().fromJson(context.body(), JsonObject.class);
@@ -115,6 +126,27 @@ public class Server {
         JoinResult res = gameService.joinGame(req);
         context.status(res.status());
         context.result(new Gson().toJson(res));
+    }
+
+
+    //error handlers
+    private void alreadyTaken(AlreadyTakenException e, Context context) {
+        context.status(403);
+        context.result(e.toJson());
+    }
+
+    private void noAuth(NoAuthException e, Context context) {
+        context.status(401);
+        context.result(e.toJson());
+    }
+
+    private void badRequest(BadRequestException e, Context context) {
+        context.status(400);
+        context.result(e.toJson());
+    }
+
+    private void notFound(Context context) {
+        context.status(404);
     }
 
 
