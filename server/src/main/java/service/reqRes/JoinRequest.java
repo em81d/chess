@@ -1,4 +1,4 @@
-package service.RR;
+package service.reqRes;
 
 public record JoinRequest(String authToken, String color, int gameID) {
 }

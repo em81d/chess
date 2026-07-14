@@ -1,4 +1,4 @@
-package service.RR;
+package service.reqRes;
 
 public record JoinResult(int status) {
 }

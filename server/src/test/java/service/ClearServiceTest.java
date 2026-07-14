@@ -3,18 +3,9 @@ package service;
 import dataaccess.AuthDAOMemory;
 import dataaccess.GameDAOMemory;
 import dataaccess.UserDAOMemory;
-import dataaccess.exceptions.AlreadyTakenException;
-import dataaccess.exceptions.BadRequestException;
 import dataaccess.exceptions.DataAccessException;
-import dataaccess.exceptions.NoAuthException;
-import model.AbbreviatedGame;
 import org.junit.jupiter.api.*;
-import service.RR.*;
-
-import java.util.ArrayList;
-import java.util.Collection;
-
-import static org.junit.jupiter.api.Assertions.*;
+import service.reqRes.*;
 
 
 public class ClearServiceTest {

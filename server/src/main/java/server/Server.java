@@ -9,12 +9,8 @@ import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.NoAuthException;
 import io.javalin.*;
 import io.javalin.http.Context;
-import org.jetbrains.annotations.NotNull;
-import service.RR.*;
+import service.reqRes.*;
 import service.*;
-import dataaccess.exceptions.*;
-
-import javax.xml.crypto.Data;
 
 public class Server {
 
@@ -163,7 +159,8 @@ public class Server {
     //needs to receive HTTP requests and INITIALIZE all the handlers
     //when a request comes in, it checks what kind it is, and forwards it to the appropriate handler
     //handler deals with the http communication details
-    //so the logout handler would receive the http request for a user to logout and convert it to a LogoutRequest object that gets passed on to the service
+    //so the logout handler would receive the http request for a user to logout and convert it to a
+    //LogoutRequest object that gets passed on to the service
     //so handler is the one that parses the json
     //when the handler receives the logout result, it converts it back into json and passes back to the server
 

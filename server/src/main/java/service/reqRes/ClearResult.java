@@ -1,4 +1,4 @@
-package service.RR;
+package service.reqRes;
 
 public record ClearResult(int status) {
 }
