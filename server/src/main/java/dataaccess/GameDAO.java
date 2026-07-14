@@ -1,9 +1,10 @@
 package dataaccess;
-
 import chess.ChessGame;
+import model.AbbreviatedGame;
 import model.GameData;
-
+import com.google.gson.JsonObject;
 import java.util.Collection;
+import java.util.Map;
 
 public interface GameDAO {
     /*
@@ -18,7 +19,7 @@ public interface GameDAO {
 
     int createGame(String name);
     GameData getGame(int gameID);
-    Collection<GameData> listGames();
+    Collection<AbbreviatedGame> listGames();
     GameData updateGame(int gameID, ChessGame game);
     GameData updateGame(GameData game, String color, String username);
     void clearGames();

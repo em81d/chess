@@ -40,7 +40,7 @@ public class GameService {
         if (joinRequest.color().equals("WHITE") && game.whiteUsername()==null) {
             gameDao.updateGame(game, joinRequest.color(), auth.username());
         }
-        else if (joinRequest.color()=="BLACK" && game.blackUsername()==null) {
+        else if (joinRequest.color().equals("BLACK") && game.blackUsername()==null) {
             gameDao.updateGame(game, joinRequest.color(), auth.username());
         }
         else {

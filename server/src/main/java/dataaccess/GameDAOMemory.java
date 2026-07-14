@@ -1,10 +1,16 @@
 package dataaccess;
 
 import chess.ChessGame;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import model.AbbreviatedGame;
 import model.GameData;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 public class GameDAOMemory implements GameDAO {
 
@@ -64,8 +70,12 @@ public class GameDAOMemory implements GameDAO {
     }
 
     @Override
-    public Collection<GameData> listGames() {
-        return games;
+    public Collection<AbbreviatedGame> listGames() {
+        Collection<AbbreviatedGame> abbreviatedGames = new ArrayList<>();
+        for (GameData game : games) {
+            abbreviatedGames.add(new AbbreviatedGame(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName()));
+        }
+        return abbreviatedGames;
     }
 
     @Override

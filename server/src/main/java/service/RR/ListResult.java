@@ -1,6 +1,6 @@
 package service.RR;
-import model.GameData;
+import model.AbbreviatedGame;
 import java.util.Collection;
 
-public record ListResult(Collection<GameData> games, int status) {
+public record ListResult(Collection<AbbreviatedGame> games, int status) {
 }
