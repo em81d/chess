@@ -11,6 +11,7 @@ import model.GameData;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 public class GameDAOMemory implements GameDAO {
 
@@ -81,10 +82,33 @@ public class GameDAOMemory implements GameDAO {
     @Override
     public void clearGames() {
         games.removeAll(games);
+        gameCount = 0;
     }
 
     public int newGameId() {
         return gameCount + 100;
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        GameDAOMemory that = (GameDAOMemory) o;
+        return gameCount == that.gameCount && Objects.equals(games, that.games);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(games, gameCount);
+    }
+
+    @Override
+    public String toString() {
+        return "GameDAOMemory{" +
+                "games=" + games +
+                ", gameCount=" + gameCount +
+                '}';
+    }
 }

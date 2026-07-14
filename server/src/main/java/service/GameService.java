@@ -8,6 +8,8 @@ import model.AuthData;
 import model.GameData;
 import service.RR.*;
 
+import java.util.Objects;
+
 public class GameService {
 
     private final UserDAO userDao;
@@ -78,5 +80,29 @@ public class GameService {
         }
 
         return new ListResult(gameDao.listGames(), 200);
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        GameService that = (GameService) o;
+        return Objects.equals(userDao, that.userDao) && Objects.equals(authDao, that.authDao) && Objects.equals(gameDao, that.gameDao);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userDao, authDao, gameDao);
+    }
+
+    @Override
+    public String toString() {
+        return "GameService{" +
+                "userDao=" + userDao +
+                ", authDao=" + authDao +
+                ", gameDao=" + gameDao +
+                '}';
     }
 }

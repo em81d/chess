@@ -5,6 +5,8 @@ import dataaccess.UserDAO;
 import service.RR.ClearRequest;
 import service.RR.ClearResult;
 
+import java.util.Objects;
+
 public class ClearService {
 
 
@@ -23,5 +25,29 @@ public class ClearService {
         userDao.clearUsers();
         authDao.clearAuths();
         return new ClearResult(200);
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ClearService that = (ClearService) o;
+        return Objects.equals(gameDao, that.gameDao) && Objects.equals(userDao, that.userDao) && Objects.equals(authDao, that.authDao);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(gameDao, userDao, authDao);
+    }
+
+    @Override
+    public String toString() {
+        return "ClearService{" +
+                "gameDao=" + gameDao +
+                ", userDao=" + userDao +
+                ", authDao=" + authDao +
+                '}';
     }
 }

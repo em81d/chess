@@ -1,5 +1,7 @@
 package dataaccess;
 import model.AuthData;
+
+import java.util.Objects;
 import java.util.UUID;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,4 +57,26 @@ public class AuthDAOMemory implements AuthDAO {
         auths.removeAll(auths);
     }
 
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        AuthDAOMemory that = (AuthDAOMemory) o;
+        return Objects.equals(auths, that.auths);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(auths);
+    }
+
+    @Override
+    public String toString() {
+        return "AuthDAOMemory{" +
+                "auths=" + auths +
+                '}';
+    }
 }

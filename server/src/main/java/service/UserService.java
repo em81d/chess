@@ -7,6 +7,8 @@ import dataaccess.exceptions.NoAuthException;
 import model.*;
 import service.RR.*;
 
+import java.util.Objects;
+
 public class UserService {
 
     private final UserDAO userDao;
@@ -71,6 +73,29 @@ public class UserService {
 
         authDao.deleteAuth(authToken);
         return new LogoutResult(200);
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        UserService that = (UserService) o;
+        return Objects.equals(userDao, that.userDao) && Objects.equals(authDao, that.authDao);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userDao, authDao);
+    }
+
+    @Override
+    public String toString() {
+        return "UserService{" +
+                "userDao=" + userDao +
+                ", authDao=" + authDao +
+                '}';
     }
 }
 

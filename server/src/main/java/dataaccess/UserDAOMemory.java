@@ -3,6 +3,7 @@ package dataaccess;
 import model.UserData;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class UserDAOMemory implements UserDAO {
 
@@ -37,4 +38,25 @@ public class UserDAOMemory implements UserDAO {
         users.removeAll(users);
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        UserDAOMemory that = (UserDAOMemory) o;
+        return Objects.equals(users, that.users);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(users);
+    }
+
+    @Override
+    public String toString() {
+        return "UserDAOMemory{" +
+                "users=" + users +
+                '}';
+    }
 }
