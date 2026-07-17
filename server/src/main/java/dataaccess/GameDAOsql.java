@@ -19,6 +19,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+
 
 public class GameDAOsql implements GameDAO {
 
@@ -29,27 +31,72 @@ public class GameDAOsql implements GameDAO {
 
 
     @Override
-    public int createGame(String name) {
+    public int createGame(String name)  throws ServerResponseException {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("INSERT INTO game (name, json) VALUES(?, ?)", RETURN_GENERATED_KEYS)) {
+                preparedStatement.setString(1, name);
+                preparedStatement.setString(2, new Gson().toJson(new ChessGame()));
 
+                preparedStatement.executeUpdate();
+
+                var resultSet = preparedStatement.getGeneratedKeys();
+                var ID = 0;
+                if (resultSet.next()) {
+                    ID = resultSet.getInt(1);
+                }
+
+                return ID;
+            }
+        }
+        catch (SQLException | DataAccessException e) {
+            throw new ServerResponseException("Error: Unable to create game in database:" + e.getMessage());
+        }
     }
 
     @Override
     public GameData updateGame(int gameID, ChessGame g){
 
+
+        //temporary method
+        return new GameData(0, "w", "b", "game", null);
     }
 
     @Override
     public GameData updateGame(GameData game, String color, String username) {
 
+
+        //temporary method
+        return new GameData(0, "w", "b", "game", null);
     }
 
     @Override
-    public GameData getGame(int gameID){
+    public GameData getGame(int gameID) throws ServerResponseException {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("SELECT name, whiteusername, blackusername, json FROM game WHERE id=?")) {
+                preparedStatement.setInt(1, gameID);
+                try (var stmt = preparedStatement.executeQuery()) {
+                    String name = stmt.getString("name");
+                    String whiteusername = stmt.getString("whiteusername");
+                    String blackusername = stmt.getString("blackusername");
+                    ChessGame game = new Gson().fromJson(stmt.getString("json"), ChessGame.class);
+
+                    return new GameData(gameID, whiteusername, blackusername, name, game);
+                }
+            }
+        }
+        catch (SQLException | DataAccessException e) {
+            throw new ServerResponseException("Error: Unable to get game from database:" + e.getMessage());
+        }
 
     }
 
     @Override
     public Collection<AbbreviatedGame> listGames() {
+
+        //NOT A REAL METHOD
+        Collection<AbbreviatedGame> g = new ArrayList<>();
+        g.add(new AbbreviatedGame(0, "w", "b", "game"));
+        return g;
 
     }
 
@@ -58,9 +105,19 @@ public class GameDAOsql implements GameDAO {
 
     }
 
-    public int newGameId() {
 
-    }
+    private final String[] createStatements = {
+            """
+            CREATE TABLE IF NOT EXISTS  game (
+              `id` int NOT NULL AUTO_INCREMENT,
+              `name` varchar(100) NOT NULL,
+              `whiteusername` varchar(100),
+              `blackusername` varchar(100),
+              `json` TEXT DEFAULT NULL,
+              PRIMARY KEY (`id`),
+            )
+            """
+    };
 
 
     private void configureDatabase()  throws ServerResponseException {
@@ -72,6 +129,11 @@ public class GameDAOsql implements GameDAO {
         }
 
         try (Connection conn = DatabaseManager.getConnection()) {
+            for (String statement : createStatements) {
+                try (var preparedStatement = conn.prepareStatement(statement)){
+                    preparedStatement.executeUpdate();
+                }
+            }
 
         }
         catch (SQLException | DataAccessException e) {

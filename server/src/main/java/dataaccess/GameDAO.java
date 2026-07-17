@@ -1,5 +1,6 @@
 package dataaccess;
 import chess.ChessGame;
+import dataaccess.exceptions.ServerResponseException;
 import model.AbbreviatedGame;
 import model.GameData;
 import com.google.gson.JsonObject;
@@ -18,10 +19,10 @@ public interface GameDAO {
             where does clear DAO go??
     */
 
-    int createGame(String name);
-    GameData getGame(int gameID);
-    Collection<AbbreviatedGame> listGames();
-    GameData updateGame(int gameID, ChessGame game);
-    GameData updateGame(GameData game, String color, String username);
-    void clearGames();
+    int createGame(String name) throws ServerResponseException;
+    GameData getGame(int gameID) throws ServerResponseException;
+    Collection<AbbreviatedGame> listGames() throws ServerResponseException;
+    GameData updateGame(int gameID, ChessGame game) throws ServerResponseException;
+    GameData updateGame(GameData game, String color, String username) throws ServerResponseException;
+    void clearGames() throws ServerResponseException;
 }
