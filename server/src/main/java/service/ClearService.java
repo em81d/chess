@@ -2,6 +2,8 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
+import dataaccess.exceptions.DataAccessException;
+import dataaccess.exceptions.ServerResponseException;
 import service.reqres.ClearRequest;
 import service.reqres.ClearResult;
 
@@ -20,7 +22,7 @@ public class ClearService {
         this.authDao = authDao;
     }
 
-    public ClearResult clear(ClearRequest clearRequest) {
+    public ClearResult clear(ClearRequest clearRequest) throws ServerResponseException {
         gameDao.clearGames();
         userDao.clearUsers();
         authDao.clearAuths();

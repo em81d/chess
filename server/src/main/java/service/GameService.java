@@ -1,9 +1,6 @@
 package service;
 import dataaccess.*;
-import dataaccess.exceptions.AlreadyTakenException;
-import dataaccess.exceptions.BadRequestException;
-import dataaccess.exceptions.DataAccessException;
-import dataaccess.exceptions.NoAuthException;
+import dataaccess.exceptions.*;
 import model.AuthData;
 import model.GameData;
 import service.reqres.*;
@@ -72,7 +69,7 @@ public class GameService {
     }
 
     //list games eventually needs to return the games in the format specified rather than printing out the whole game board
-    public ListResult listGames(ListRequest listRequest) throws NoAuthException {
+    public ListResult listGames(ListRequest listRequest) throws NoAuthException, ServerResponseException {
         String authToken = listRequest.authToken();
         if (authToken == null || authDao.getAuth(authToken) == null) {
             throw new NoAuthException("invalid auth token or no auth token");

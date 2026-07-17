@@ -25,8 +25,14 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 public class GameDAOsql implements GameDAO {
 
 
-    public GameDAOsql() throws ServerResponseException {
-        configureDatabase();
+    public GameDAOsql() {
+        System.out.println("trying to start server...");
+        try {
+            configureDatabase();
+        }
+        catch (ServerResponseException e) {
+            System.out.println("failed to start server. Message: " + e.getMessage());
+        }
     }
 
 
@@ -106,18 +112,18 @@ public class GameDAOsql implements GameDAO {
     }
 
 
-    private final String[] createStatements = {
+    private final String createStatement =
             """
             CREATE TABLE IF NOT EXISTS  game (
-              `id` int NOT NULL AUTO_INCREMENT,
-              `name` varchar(100) NOT NULL,
-              `whiteusername` varchar(100),
-              `blackusername` varchar(100),
-              `json` TEXT DEFAULT NULL,
-              PRIMARY KEY (`id`),
-            )
+              id int NOT NULL AUTO_INCREMENT,
+              name varchar(100) NOT NULL,
+              whiteusername varchar(100),
+              blackusername varchar(100),
+              json TEXT DEFAULT NULL,
+              PRIMARY KEY (id)
+            );
             """
-    };
+    ;
 
 
     private void configureDatabase()  throws ServerResponseException {
@@ -129,15 +135,12 @@ public class GameDAOsql implements GameDAO {
         }
 
         try (Connection conn = DatabaseManager.getConnection()) {
-            for (String statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)){
-                    preparedStatement.executeUpdate();
-                }
+            try (var preparedStatement = conn.prepareStatement(createStatement)) {
+                preparedStatement.executeUpdate();
             }
-
         }
         catch (SQLException | DataAccessException e) {
-            throw new ServerResponseException("Error: Unable to configure database:" + e.getMessage());
+            throw new ServerResponseException("Error: Unable to configure database: " + e.getMessage());
         }
     }
 

@@ -3,10 +3,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dataaccess.*;
-import dataaccess.exceptions.AlreadyTakenException;
-import dataaccess.exceptions.BadRequestException;
-import dataaccess.exceptions.DataAccessException;
-import dataaccess.exceptions.NoAuthException;
+import dataaccess.exceptions.*;
 import io.javalin.*;
 import io.javalin.http.Context;
 import service.reqres.*;
@@ -23,9 +20,12 @@ public class Server {
     private final GameDAO gameDao;
 
     public Server() {
+
         userDao = new UserDAOMemory();
-        gameDao = new GameDAOMemory();
+        gameDao = new GameDAOsql();
         authDao = new AuthDAOMemory();
+
+
         userService = new UserService(userDao, authDao);
         gameService = new GameService(userDao, authDao, gameDao);
         clearService = new ClearService(gameDao, userDao, authDao);
@@ -41,7 +41,8 @@ public class Server {
                 .error(404, this::notFound)
                 .exception(BadRequestException.class, this::badRequest)
                 .exception(AlreadyTakenException.class, this::alreadyTaken)
-                .exception(NoAuthException.class, this::noAuth);
+                .exception(NoAuthException.class, this::noAuth)
+                .exception(ServerResponseException.class, this::serverError);
 
         // Register your endpoints and exception handlers here.
 
@@ -66,7 +67,7 @@ public class Server {
         context.result(new Gson().toJson(res));
     }
 
-    private void clear(Context context) {
+    private void clear(Context context) throws ServerResponseException {
 //        deserialize
         ClearRequest req = new Gson().fromJson(context.body(), ClearRequest.class);
         ClearResult res = clearService.clear(req);
@@ -148,6 +149,11 @@ public class Server {
 
     private void badRequest(BadRequestException e, Context context) {
         context.status(400);
+        context.result(e.toJson());
+    }
+
+    private void serverError(ServerResponseException e, Context context) {
+        context.status(500);
         context.result(e.toJson());
     }
 
