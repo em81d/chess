@@ -1,9 +1,6 @@
 package service;
 import dataaccess.*;
-import dataaccess.exceptions.AlreadyTakenException;
-import dataaccess.exceptions.BadRequestException;
-import dataaccess.exceptions.DataAccessException;
-import dataaccess.exceptions.NoAuthException;
+import dataaccess.exceptions.*;
 import model.*;
 import service.reqres.*;
 
@@ -63,7 +60,7 @@ public class UserService {
     }
 
 
-    public LogoutResult logout(LogoutRequest logoutRequest) throws NoAuthException {
+    public LogoutResult logout(LogoutRequest logoutRequest) throws NoAuthException, ServerResponseException {
         String authToken = logoutRequest.authToken();
 
         if (authDao.getAuth(authToken) == null) {

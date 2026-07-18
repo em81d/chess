@@ -23,7 +23,7 @@ public class Server {
 
         userDao = new UserDAOsql();
         gameDao = new GameDAOsql();
-        authDao = new AuthDAOMemory();
+        authDao = new AuthDAOsql();
 
 
         userService = new UserService(userDao, authDao);

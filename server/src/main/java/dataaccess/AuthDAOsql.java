@@ -1,27 +1,22 @@
 package dataaccess;
-
-import chess.ChessGame;
-import com.google.gson.Gson;
 import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.ServerResponseException;
-import model.GameData;
+import model.AuthData;
 import model.UserData;
-import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Objects;
+import java.util.UUID;
+import java.util.ArrayList;
+import java.util.Collection;
 
+public class AuthDAOsql implements AuthDAO {
 
+    private Collection<AuthData> auths;
 
-public class UserDAOsql implements UserDAO {
+    public AuthDAOsql () {
 
-    //stores users, then there will be one that stores games, one that stores authTokens, etc
-    private ArrayList<UserData> users;
-
-
-    public UserDAOsql() {
         System.out.println("trying to start server...");
         try {
             configureDatabase();
@@ -31,15 +26,19 @@ public class UserDAOsql implements UserDAO {
         }
     }
 
+
     @Override
-    public void createUser(UserData u) throws ServerResponseException {
+    public String createAuth(String username) throws ServerResponseException {
+
         try (Connection conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("INSERT INTO user (username, email, password) VALUES(?, ?, ?)")) {
-                preparedStatement.setString(1, u.username());
-                preparedStatement.setString(2, u.email());
-                preparedStatement.setString(3, hashUserPassword(u.username(), u.password()));
+            try (var preparedStatement = conn.prepareStatement("INSERT INTO auth (username, authtoken) VALUES(?, ?)")) {
+                preparedStatement.setString(1, username);
+                String authToken = generateToken();
+                preparedStatement.setString(2, authToken);
 
                 preparedStatement.executeUpdate();
+
+                return authToken;
 
             }
         }
@@ -49,22 +48,15 @@ public class UserDAOsql implements UserDAO {
 
     }
 
-    private String hashUserPassword(String username, String clearTextPassword) {
-        String hashedPassword = BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
-
-        // write the hashed password in database along with the user's other information
-        return hashedPassword;
-    }
-
     @Override
-    public UserData getUser(String username) throws ServerResponseException {
-        try (Connection conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("SELECT password, email FROM user WHERE username=?")) {
-                preparedStatement.setString(1, username);
-                try (var stmt = preparedStatement.executeQuery()) {
+    public AuthData getAuth(String authToken) throws ServerResponseException {
 
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("SELECT username FROM auth WHERE authtoken=?")) {
+                preparedStatement.setString(1, authToken);
+                try (var stmt = preparedStatement.executeQuery()) {
                     if (stmt.next()) {
-                        return new UserData(username, stmt.getString("password"), stmt.getString("email"));
+                        return new AuthData(authToken, stmt.getString("username"));
                     }
                     else {
                         return null;
@@ -74,31 +66,51 @@ public class UserDAOsql implements UserDAO {
             }
         }
         catch (SQLException | DataAccessException e) {
-            throw new ServerResponseException("Unable to get user from database:" + e.getMessage());
+            throw new ServerResponseException("Unable to get auth from database:" + e.getMessage());
         }
 
     }
 
+
     @Override
-    public void clearUsers() throws ServerResponseException{
+    public void deleteAuth(String authToken) throws ServerResponseException {
         try (Connection conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("TRUNCATE user")) {
+            try (var preparedStatement = conn.prepareStatement("DELETE FROM auth WHERE authtoken=?")) {
+                preparedStatement.setString(1, authToken);
                 preparedStatement.executeUpdate();
             }
         }
         catch (SQLException | DataAccessException e) {
-            throw new ServerResponseException("Error: Unable to clear users from database:" + e.getMessage());
+            throw new ServerResponseException("Error: Unable to clear auth data from database:" + e.getMessage());
+        }
+
+    }
+
+
+
+    public static String generateToken() {
+        return UUID.randomUUID().toString();
+    }
+
+    @Override
+    public void clearAuths() throws ServerResponseException {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("TRUNCATE auth")) {
+                preparedStatement.executeUpdate();
+            }
+        }
+        catch (SQLException | DataAccessException e) {
+            throw new ServerResponseException("Error: Unable to clear auth data from database:" + e.getMessage());
         }
     }
 
 
     private final String createStatement =
             """
-            CREATE TABLE IF NOT EXISTS  user (
+            CREATE TABLE IF NOT EXISTS  auth (
+              authtoken varchar(100) NOT NULL,
               username varchar(100) NOT NULL,
-              email varchar(100) NOT NULL,
-              password varchar(100) NOT NULL,
-              PRIMARY KEY (username)
+              PRIMARY KEY (authtoken)
             );
             """
             ;
@@ -121,5 +133,6 @@ public class UserDAOsql implements UserDAO {
             throw new ServerResponseException("Error: Unable to configure database: " + e.getMessage());
         }
     }
+
 
 }
