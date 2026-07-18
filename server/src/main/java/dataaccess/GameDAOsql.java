@@ -97,13 +97,28 @@ public class GameDAOsql implements GameDAO {
     }
 
     @Override
-    public Collection<AbbreviatedGame> listGames() {
+    public Collection<AbbreviatedGame> listGames() throws ServerResponseException {
+        Collection<AbbreviatedGame> result = new ArrayList<>();
 
-        //NOT A REAL METHOD
-        Collection<AbbreviatedGame> g = new ArrayList<>();
-        g.add(new AbbreviatedGame(0, "w", "b", "game"));
-        return g;
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("SELECT id, name, whiteusername, blackusername, json FROM game")) {
+                try (var stmt = preparedStatement.executeQuery()) {
+                    while (stmt.next()){
+                        String name = stmt.getString("name");
+                        String whiteusername = stmt.getString("whiteusername");
+                        String blackusername = stmt.getString("blackusername");
+                        int id = stmt.getInt("id");
 
+                        result.add(new AbbreviatedGame(id, whiteusername, blackusername, name));
+                    }
+                }
+            }
+        }
+        catch (SQLException | DataAccessException e) {
+            throw new ServerResponseException("Error: Unable to list games from database:" + e.getMessage());
+        }
+
+        return result;
     }
 
     @Override
