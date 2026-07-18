@@ -60,19 +60,67 @@ public class GameDAOsql implements GameDAO {
     }
 
     @Override
-    public GameData updateGame(int gameID, ChessGame g){
+    public GameData updateGame(int gameID, ChessGame g) throws ServerResponseException{
 
+        String whiteusername;
+        String blackusername;
+        String gameName;
 
-        //temporary method
-        return new GameData(0, "w", "b", "game", null);
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement1 = conn.prepareStatement("UPDATE game SET json=? WHERE id=?")) {
+                preparedStatement1.setInt(2, gameID);
+                preparedStatement1.setString(1, new Gson().toJson(g));
+
+                preparedStatement1.executeUpdate();
+            }
+            try (var preparedStatement2 = conn.prepareStatement("SELECT whiteusername, blackusername, name FROM game WHERE id=?")) {
+                preparedStatement2.setInt(1, gameID);
+                try (var stmt = preparedStatement2.executeQuery()) {
+                    gameName = stmt.getString("name");
+                    whiteusername = stmt.getString("whiteusername");
+                    blackusername = stmt.getString("blackusername");
+                    ChessGame game = new Gson().fromJson(stmt.getString("json"), ChessGame.class);
+
+                    return new GameData(gameID, whiteusername, blackusername, gameName, game);
+                }
+            }
+        }
+        catch (SQLException | DataAccessException e) {
+            throw new ServerResponseException("Error: Unable to get game from database:" + e.getMessage());
+        }
+
     }
 
     @Override
-    public GameData updateGame(GameData game, String color, String username) {
+    public GameData updateGame(GameData game, String color, String username) throws ServerResponseException {
+        String whiteusername = null;
+        String blackusername = null;
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("UPDATE game SET whiteusername=?, blackusername=? WHERE id=?")) {
+                preparedStatement.setInt(3, game.gameID());
 
+                if (color.equals("WHITE")) {
+                    preparedStatement.setString(1, username);
+                    preparedStatement.setString(2, null);
+                    whiteusername = username;
+                }
+                else if (color.equals("BLACK")) {
+                    preparedStatement.setString(1, null);
+                    preparedStatement.setString(2, username);
+                    blackusername = username;
+                }
+                else {
+                    throw new DataAccessException("invalid color");
+                }
 
-        //temporary method
-        return new GameData(0, "w", "b", "game", null);
+                preparedStatement.executeUpdate();
+            }
+        }
+        catch (SQLException | DataAccessException e) {
+            throw new ServerResponseException("Error: Unable to get game from database:" + e.getMessage());
+        }
+
+        return new GameData(game.gameID(), whiteusername, blackusername, game.gameName(), game.game());
     }
 
     @Override
@@ -122,7 +170,16 @@ public class GameDAOsql implements GameDAO {
     }
 
     @Override
-    public void clearGames() {
+    public void clearGames() throws ServerResponseException {
+
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("TRUNCATE game")) {
+                preparedStatement.executeUpdate();
+            }
+        }
+        catch (SQLException | DataAccessException e) {
+            throw new ServerResponseException("Error: Unable to clear games from database:" + e.getMessage());
+        }
 
     }
 
