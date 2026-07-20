@@ -51,7 +51,6 @@ public class GameDAOsql implements GameDAO {
                     ID = resultSet.getInt(1);
                 }
 
-                System.out.println("id being returned: " + ID);
                 return ID;
             }
         }

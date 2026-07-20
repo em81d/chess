@@ -39,7 +39,6 @@ public class GameDAOTests {
         Assertions.assertDoesNotThrow(() -> dao.createGame("game1"));
 
         int id = dao.createGame("game2");
-        System.out.println("id we are looking for: " + id);
 
         Assertions.assertDoesNotThrow(() -> dao.getGame(id));
     }
