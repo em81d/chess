@@ -51,6 +51,7 @@ public class GameDAOsql implements GameDAO {
                     ID = resultSet.getInt(1);
                 }
 
+                System.out.println("id being returned: " + ID);
                 return ID;
             }
         }
@@ -124,13 +125,19 @@ public class GameDAOsql implements GameDAO {
         try (Connection conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement("SELECT name, whiteusername, blackusername, json FROM game WHERE id=?")) {
                 preparedStatement.setInt(1, gameID);
-                try (var stmt = preparedStatement.executeQuery()) {
-                    String name = stmt.getString("name");
-                    String whiteusername = stmt.getString("whiteusername");
-                    String blackusername = stmt.getString("blackusername");
-                    ChessGame game = new Gson().fromJson(stmt.getString("json"), ChessGame.class);
 
-                    return new GameData(gameID, whiteusername, blackusername, name, game);
+                try (var stmt = preparedStatement.executeQuery()) {
+                    if (stmt.next()) {
+                        String name = stmt.getString("name");
+                        String whiteusername = stmt.getString("whiteusername");
+                        String blackusername = stmt.getString("blackusername");
+                        ChessGame game = new Gson().fromJson(stmt.getString("json"), ChessGame.class);
+
+                        return new GameData(gameID, whiteusername, blackusername, name, game);
+                    }
+                    else {
+                        return null;
+                    }
                 }
             }
         }
