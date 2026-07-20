@@ -13,7 +13,6 @@ import java.util.Collection;
 
 public class AuthDAOsql implements AuthDAO {
 
-    private Collection<AuthData> auths;
 
     public AuthDAOsql () {
 
@@ -73,11 +72,16 @@ public class AuthDAOsql implements AuthDAO {
 
 
     @Override
-    public void deleteAuth(String authToken) throws ServerResponseException {
+    public boolean deleteAuth(String authToken) throws ServerResponseException {
         try (Connection conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement("DELETE FROM auth WHERE authtoken=?")) {
                 preparedStatement.setString(1, authToken);
-                preparedStatement.executeUpdate();
+                int rowsAffected = preparedStatement.executeUpdate();
+
+                if (rowsAffected == 0) {
+                    return false;
+                }
+                return true;
             }
         }
         catch (SQLException | DataAccessException e) {
@@ -135,4 +139,24 @@ public class AuthDAOsql implements AuthDAO {
     }
 
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        AuthDAOsql that = (AuthDAOsql) o;
+        return Objects.equals(createStatement, that.createStatement);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(createStatement);
+    }
+
+    @Override
+    public String toString() {
+        return "AuthDAOsql{" +
+                "createStatement='" + createStatement + '\'' +
+                '}';
+    }
 }

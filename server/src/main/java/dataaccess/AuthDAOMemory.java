@@ -33,7 +33,7 @@ public class AuthDAOMemory implements AuthDAO {
 
 
     @Override
-    public void deleteAuth(String authToken){
+    public boolean deleteAuth(String authToken){
         AuthData toDelete = null;
         for (AuthData auth  : auths) {
             if (auth.authToken().equals(authToken)) {
@@ -43,6 +43,10 @@ public class AuthDAOMemory implements AuthDAO {
 
         if (toDelete != null) {
             auths.remove(toDelete);
+            return true;
+        }
+        else {
+            return false;
         }
     }
 

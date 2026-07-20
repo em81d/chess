@@ -100,27 +100,23 @@ public class GameDAOsql implements GameDAO {
                 preparedStatement.setInt(3, game.gameID());
 
                 if (color.equals("WHITE")) {
-                    preparedStatement.setString(1, username);
-                    preparedStatement.setString(2, null);
                     whiteusername = username;
                 }
-                else if (color.equals("BLACK")) {
-                    preparedStatement.setString(1, null);
-                    preparedStatement.setString(2, username);
+                else {
                     blackusername = username;
                 }
-                else {
-                    throw new DataAccessException("invalid color");
-                }
+
+                preparedStatement.setString(1, whiteusername);
+                preparedStatement.setString(2, blackusername);
 
                 preparedStatement.executeUpdate();
+                return new GameData(game.gameID(), whiteusername, blackusername, game.gameName(), game.game());
             }
         }
         catch (SQLException | DataAccessException e) {
             throw new ServerResponseException("Error: Unable to get game from database:" + e.getMessage());
         }
 
-        return new GameData(game.gameID(), whiteusername, blackusername, game.gameName(), game.game());
     }
 
     @Override

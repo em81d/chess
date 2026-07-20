@@ -11,7 +11,7 @@ public interface AuthDAO {
 
     String createAuth(String username) throws ServerResponseException;
     AuthData getAuth(String authToken) throws ServerResponseException;
-    void deleteAuth(String authToken) throws ServerResponseException;
+    boolean deleteAuth(String authToken) throws ServerResponseException;
     void clearAuths() throws ServerResponseException;
 
 }
