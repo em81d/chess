@@ -39,10 +39,10 @@ public class AuthDAOTests {
 
     @Test
     public void testAddAuthFail() throws ServerResponseException {
-//        Assertions.assertThrows(ServerResponseException.class, () -> dao.createAuth((""))); //not sure this will work
+        Assertions.assertThrows(ServerResponseException.class, () -> dao.createAuth(null));
+        Assertions.assertThrows(ServerResponseException.class, () -> dao.createAuth("this username is way way way way" +
+                " too long so it is never going to fit in my varchar(100) data object!!!"));
 
-//        String token = dao.createAuth("user1"); //I could try to add a duplicate auth token which would throw
-        //a sql error, but there is no way to set the authtoken manually. It would defeat the purpose to overload the method for that
     }
 
     @Test

@@ -60,6 +60,7 @@ public class UserDAOTests {
     @Test
     public void getUserFail() throws ServerResponseException {
          Assertions.assertNull(dao.getUser("nonexistentUsername"));
+
     }
 
     @Test

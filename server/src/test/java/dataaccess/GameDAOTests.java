@@ -45,7 +45,9 @@ public class GameDAOTests {
 
     @Test
     public void createGameFail() {
-        // ???
+
+        Assertions.assertThrows(ServerResponseException.class, () -> dao.createGame("supercalifragialisticexpialidocius " +
+                "game that has a really really long name that is way too long and will not work"));
     }
 
     @Test
