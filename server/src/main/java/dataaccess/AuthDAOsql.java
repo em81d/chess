@@ -85,7 +85,7 @@ public class AuthDAOsql implements AuthDAO {
             }
         }
         catch (SQLException | DataAccessException e) {
-            throw new ServerResponseException("Error: Unable to clear auth data from database:" + e.getMessage());
+            throw new ServerResponseException("Error: Unable to delete auth data from database:" + e.getMessage());
         }
 
     }

@@ -2,6 +2,7 @@ package service;
 import dataaccess.*;
 import dataaccess.exceptions.*;
 import model.*;
+import org.mindrot.jbcrypt.BCrypt;
 import service.reqres.*;
 
 import java.util.Objects;
@@ -48,8 +49,9 @@ public class UserService {
 
         UserData user = userDao.getUser(username);
 
+//        BCrypt.checkpw(providedClearTextPassword, hashedPassword)
         //credentials are correct
-        if (user != null && password.equals(user.password())) {
+        if (user != null && BCrypt.checkpw(password, user.password())) {
             return new LoginResult(username, authDao.createAuth(username), 200);
         }
         else {
