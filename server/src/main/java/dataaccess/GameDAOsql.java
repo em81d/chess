@@ -93,8 +93,8 @@ public class GameDAOsql implements GameDAO {
 
     @Override
     public GameData updateGame(GameData game, String color, String username) throws ServerResponseException {
-        String whiteusername = null;
-        String blackusername = null;
+        String whiteusername = game.whiteUsername();
+        String blackusername = game.blackUsername();
         try (Connection conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement("UPDATE game SET whiteusername=?, blackusername=? WHERE id=?")) {
                 preparedStatement.setInt(3, game.gameID());
