@@ -22,13 +22,13 @@ import java.util.Objects;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 
-public class GameDAOsql implements GameDAO {
+public class GameDAOsql extends SqlDAO implements GameDAO {
 
 
     public GameDAOsql() {
         System.out.println("trying to start server...");
         try {
-            configureDatabase();
+            configureDatabase(createStatement);
         }
         catch (ServerResponseException e) {
             System.out.println("failed to start server. Message: " + e.getMessage());
@@ -46,12 +46,12 @@ public class GameDAOsql implements GameDAO {
                 preparedStatement.executeUpdate();
 
                 var resultSet = preparedStatement.getGeneratedKeys();
-                var ID = 0;
+                var id = 0;
                 if (resultSet.next()) {
-                    ID = resultSet.getInt(1);
+                    id = resultSet.getInt(1);
                 }
 
-                return ID;
+                return id;
             }
         }
         catch (SQLException | DataAccessException e) {
@@ -200,22 +200,5 @@ public class GameDAOsql implements GameDAO {
     ;
 
 
-    private void configureDatabase()  throws ServerResponseException {
-        try {
-            DatabaseManager.createDatabase();
-        }
-        catch (DataAccessException e) {
-            throw new ServerResponseException("Error: unable to create database: " + e.getMessage());
-        }
-
-        try (Connection conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement(createStatement)) {
-                preparedStatement.executeUpdate();
-            }
-        }
-        catch (SQLException | DataAccessException e) {
-            throw new ServerResponseException("Error: Unable to configure database: " + e.getMessage());
-        }
-    }
 
 }

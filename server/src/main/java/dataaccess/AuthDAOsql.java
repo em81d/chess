@@ -11,14 +11,14 @@ import java.util.UUID;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class AuthDAOsql implements AuthDAO {
+public class AuthDAOsql extends SqlDAO implements AuthDAO {
 
 
     public AuthDAOsql () {
 
         System.out.println("trying to start server...");
         try {
-            configureDatabase();
+            configureDatabase(createStatement);
         }
         catch (ServerResponseException e) {
             System.out.println("failed to start server. Message: " + e.getMessage());
@@ -118,26 +118,6 @@ public class AuthDAOsql implements AuthDAO {
             );
             """
             ;
-
-
-    private void configureDatabase()  throws ServerResponseException {
-        try {
-            DatabaseManager.createDatabase();
-        }
-        catch (DataAccessException e) {
-            throw new ServerResponseException("Error: unable to create database: " + e.getMessage());
-        }
-
-        try (Connection conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement(createStatement)) {
-                preparedStatement.executeUpdate();
-            }
-        }
-        catch (SQLException | DataAccessException e) {
-            throw new ServerResponseException("Error: Unable to configure database: " + e.getMessage());
-        }
-    }
-
 
     @Override
     public boolean equals(Object o) {

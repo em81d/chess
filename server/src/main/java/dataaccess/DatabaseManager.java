@@ -96,13 +96,15 @@ Completed execution of step: Writing configuration file
 Executing step: Updating Windows Firewall rules
 
 Adding a Windows Firewall rule for MySQL97 on port 3306.
-Attempting to add a Windows Firewall rule with command: netsh.exe advfirewall firewall add rule name="Port 3306" protocol=TCP localport=3306 dir=in action=allow
+Attempting to add a Windows Firewall rule with command: netsh.exe advfirewall firewall add rule name="Port 3306"
+* protocol=TCP localport=3306 dir=in action=allow
 Ok.
 
 
 Successfully added the Windows Firewall rule.
 Adding a Windows Firewall rule for MySQL97 on port 33060.
-Attempting to add a Windows Firewall rule with command: netsh.exe advfirewall firewall add rule name="Port 33060" protocol=TCP localport=33060 dir=in action=allow
+Attempting to add a Windows Firewall rule with command: netsh.exe advfirewall firewall add rule name="Port 33060"
+* protocol=TCP localport=33060 dir=in action=allow
 Ok.
 
 
@@ -122,7 +124,8 @@ Executing step: Initializing database (may take a long time)
 
 Attempting to run MySQL Server with --initialize-insecure option...
 Starting process for MySQL Server 9.7.1...
-Starting process with command: C:\Program Files\MySQL\MySQL Server 9.7\bin\mysqld.exe --defaults-file="C:\ProgramData\MySQL\MySQL Server 9.7\my.ini" --console --initialize-insecure=on --lower-case-table-names=1...
+Starting process with command: C:\Program Files\MySQL\MySQL Server 9.7\bin\mysqld.exe --defaults-file="C:\ProgramData\
+* MySQL\MySQL Server 9.7\my.ini" --console --initialize-insecure=on --lower-case-table-names=1...
 MySQL Server Initialization - start.
 C:\Program Files\MySQL\MySQL Server 9.7\bin\mysqld.exe (mysqld 9.7.1) initializing of server in progress as process 16972
 InnoDB initialization has started.
@@ -158,7 +161,8 @@ InnoDB initialization has ended.
 CA certificate ca.pem is self signed.
 Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
 X Plugin ready for connections. Bind-address: '::' port: 33060
-C:\Program Files\MySQL\MySQL Server 9.7\bin\mysqld.exe: ready for connections. Version: '9.7.1'  socket: ''  port: 3306  MySQL Community Server - GPL.
+C:\Program Files\MySQL\MySQL Server 9.7\bin\mysqld.exe: ready for connections. Version: '9.7.1'  socket: ''  port: 3306
+*  MySQL Community Server - GPL.
 Successfully started service MySQL97.
 Waiting until a connection to MySQL Server 9.7.1 can be established (with a maximum of 10 attempts)...
 Retry 1: Attempting to connect to Mysql@localhost:3306 with user root with no password...

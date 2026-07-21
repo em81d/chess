@@ -15,7 +15,7 @@ import java.util.Objects;
 
 
 
-public class UserDAOsql implements UserDAO {
+public class UserDAOsql extends SqlDAO implements UserDAO {
 
     //stores users, then there will be one that stores games, one that stores authTokens, etc
     private ArrayList<UserData> users;
@@ -24,7 +24,7 @@ public class UserDAOsql implements UserDAO {
     public UserDAOsql() {
         System.out.println("trying to start server...");
         try {
-            configureDatabase();
+            configureDatabase(createStatement);
         }
         catch (ServerResponseException e) {
             System.out.println("failed to start server. Message: " + e.getMessage());
@@ -103,23 +103,5 @@ public class UserDAOsql implements UserDAO {
             """
             ;
 
-
-    private void configureDatabase()  throws ServerResponseException {
-        try {
-            DatabaseManager.createDatabase();
-        }
-        catch (DataAccessException e) {
-            throw new ServerResponseException("Error: unable to create database: " + e.getMessage());
-        }
-
-        try (Connection conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement(createStatement)) {
-                preparedStatement.executeUpdate();
-            }
-        }
-        catch (SQLException | DataAccessException e) {
-            throw new ServerResponseException("Error: Unable to configure database: " + e.getMessage());
-        }
-    }
 
 }
