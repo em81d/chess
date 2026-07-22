@@ -2,10 +2,9 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
-import dataaccess.exceptions.DataAccessException;
-import dataaccess.exceptions.ServerResponseException;
-import service.reqres.ClearRequest;
-import service.reqres.ClearResult;
+import exceptions.ServerResponseException;
+import reqres.ClearRequest;
+import reqres.ClearResult;
 
 import java.util.Objects;
 

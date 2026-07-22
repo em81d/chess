@@ -3,9 +3,11 @@ package service;
 import dataaccess.AuthDAOMemory;
 import dataaccess.GameDAOMemory;
 import dataaccess.UserDAOMemory;
-import dataaccess.exceptions.DataAccessException;
+import exceptions.DataAccessException;
 import org.junit.jupiter.api.*;
-import service.reqres.*;
+import reqres.ClearRequest;
+import reqres.CreateRequest;
+import reqres.RegisterRequest;
 
 
 public class ClearServiceTest {

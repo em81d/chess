@@ -3,12 +3,12 @@ package service;
 import dataaccess.AuthDAOMemory;
 import dataaccess.GameDAOMemory;
 import dataaccess.UserDAOMemory;
-import dataaccess.exceptions.AlreadyTakenException;
-import dataaccess.exceptions.DataAccessException;
-import dataaccess.exceptions.NoAuthException;
+import exceptions.AlreadyTakenException;
+import exceptions.DataAccessException;
+import exceptions.NoAuthException;
 import model.AbbreviatedGame;
 import org.junit.jupiter.api.*;
-import service.reqres.*;
+import reqres.*;
 
 import java.util.ArrayList;
 

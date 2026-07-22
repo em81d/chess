@@ -1,9 +1,9 @@
 package service;
 import dataaccess.*;
-import dataaccess.exceptions.*;
+import exceptions.*;
 import model.AuthData;
 import model.GameData;
-import service.reqres.*;
+import reqres.*;
 
 import java.util.Objects;
 

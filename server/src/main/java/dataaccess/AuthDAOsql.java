@@ -1,15 +1,12 @@
 package dataaccess;
-import dataaccess.exceptions.DataAccessException;
-import dataaccess.exceptions.ServerResponseException;
+import exceptions.DataAccessException;
+import exceptions.ServerResponseException;
 import model.AuthData;
-import model.UserData;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.ArrayList;
-import java.util.Collection;
 
 public class AuthDAOsql extends SqlDAO implements AuthDAO {
 

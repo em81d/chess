@@ -1,4 +1,4 @@
-package dataaccess.exceptions;
+package exceptions;
 
 public class NoAuthException extends DataAccessException {
     public NoAuthException(String message) {

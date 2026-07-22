@@ -1,14 +1,12 @@
 package dataaccess;
 
 import chess.ChessGame;
-import dataaccess.exceptions.ServerResponseException;
+import exceptions.ServerResponseException;
 import model.AbbreviatedGame;
 import model.GameData;
 import org.junit.jupiter.api.*;
-import server.Server;
 import service.ClearService;
-import service.reqres.ClearRequest;
-import service.reqres.ListResult;
+import reqres.ClearRequest;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -1,4 +1,4 @@
-package service.reqres;
+package reqres;
 import model.AbbreviatedGame;
 import java.util.Collection;
 

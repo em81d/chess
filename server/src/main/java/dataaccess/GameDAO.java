@@ -1,11 +1,10 @@
 package dataaccess;
 import chess.ChessGame;
-import dataaccess.exceptions.ServerResponseException;
+import exceptions.ServerResponseException;
 import model.AbbreviatedGame;
 import model.GameData;
-import com.google.gson.JsonObject;
+
 import java.util.Collection;
-import java.util.Map;
 
 public interface GameDAO {
     /*

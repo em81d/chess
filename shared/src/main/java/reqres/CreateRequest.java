@@ -1,4 +1,4 @@
-package service.reqres;
+package reqres;
 
 public record CreateRequest(String authToken, String gameName) {
 }

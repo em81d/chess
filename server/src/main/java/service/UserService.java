@@ -1,9 +1,9 @@
 package service;
 import dataaccess.*;
-import dataaccess.exceptions.*;
+import exceptions.*;
 import model.*;
 import org.mindrot.jbcrypt.BCrypt;
-import service.reqres.*;
+import reqres.*;
 
 import java.util.Objects;
 

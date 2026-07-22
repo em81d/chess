@@ -2,22 +2,15 @@ package dataaccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import dataaccess.exceptions.DataAccessException;
-import dataaccess.exceptions.ServerResponseException;
+import exceptions.DataAccessException;
+import exceptions.ServerResponseException;
 import model.AbbreviatedGame;
 import model.GameData;
 
-import javax.xml.crypto.Data;
-import java.rmi.ServerError;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 

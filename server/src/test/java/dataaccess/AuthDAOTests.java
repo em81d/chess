@@ -1,12 +1,11 @@
 package dataaccess;
 
-import dataaccess.exceptions.DataAccessException;
-import dataaccess.exceptions.ServerResponseException;
-import model.AuthData;
+import exceptions.DataAccessException;
+import exceptions.ServerResponseException;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import service.ClearService;
-import service.reqres.ClearRequest;
+import reqres.ClearRequest;
 
 public class AuthDAOTests {
 

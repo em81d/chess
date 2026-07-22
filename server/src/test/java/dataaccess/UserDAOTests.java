@@ -1,10 +1,10 @@
 package dataaccess;
 
-import dataaccess.exceptions.ServerResponseException;
+import exceptions.ServerResponseException;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import service.ClearService;
-import service.reqres.ClearRequest;
+import reqres.ClearRequest;
 
 
 public class UserDAOTests {

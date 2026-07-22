@@ -1,4 +1,4 @@
-package dataaccess.exceptions;
+package exceptions;
 
 public class ServerResponseException extends DataAccessException {
     public ServerResponseException(String message) {

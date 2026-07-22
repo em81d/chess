@@ -3,10 +3,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dataaccess.*;
-import dataaccess.exceptions.*;
+import exceptions.*;
 import io.javalin.*;
 import io.javalin.http.Context;
-import service.reqres.*;
+import reqres.*;
 import service.*;
 
 public class Server {
