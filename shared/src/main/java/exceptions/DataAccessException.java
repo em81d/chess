@@ -34,4 +34,8 @@ public class DataAccessException extends Exception {
 
     }
 
+    public int getCode() {
+        return code;
+    }
+
 }

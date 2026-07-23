@@ -75,10 +75,7 @@ public class AuthDAOsql extends SqlDAO implements AuthDAO {
                 preparedStatement.setString(1, authToken);
                 int rowsAffected = preparedStatement.executeUpdate();
 
-                if (rowsAffected == 0) {
-                    return false;
-                }
-                return true;
+                return rowsAffected != 1;
             }
         }
         catch (SQLException | DataAccessException e) {
@@ -121,8 +118,9 @@ public class AuthDAOsql extends SqlDAO implements AuthDAO {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        AuthDAOsql that = (AuthDAOsql) o;
-        return Objects.equals(createStatement, that.createStatement);
+//        AuthDAOsql that = (AuthDAOsql) o;
+//        return Objects.equals(createStatement, that.createStatement);
+        return true;
     }
 
     @Override

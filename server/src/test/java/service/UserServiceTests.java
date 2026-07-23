@@ -76,7 +76,7 @@ public class UserServiceTests {
 
     @Test
     public void testLogoutFail() throws DataAccessException {
-        String auth = us.register(new RegisterRequest("amy", "ilovepuppies", "amy@mail.com")).authToken();
+        us.register(new RegisterRequest("amy", "ilovepuppies", "amy@mail.com")).authToken();
 
         LogoutRequest req = new LogoutRequest("notTheRightAuthToken");
 

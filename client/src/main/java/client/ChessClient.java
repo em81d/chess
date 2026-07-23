@@ -11,7 +11,7 @@ import java.util.Scanner;
 public class ChessClient {
     private final ServerFacade server;
 
-    public ChessClient(String serverUrl) throws ServerResponseException {
+    public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
     }
 
@@ -34,7 +34,7 @@ public class ChessClient {
                 result = scanner.nextLine();
 
                 if (result.equals("-h")) {
-                    printHelpDialog(scanner);
+                    printHelpDialog();
                 }
                 else if (result.equals("-l")) {
                     loginUser(scanner);
@@ -51,7 +51,7 @@ public class ChessClient {
         scanner.close();
     }
 
-    public void printHelpDialog(Scanner scanner) {
+    public void printHelpDialog() {
         System.out.println("To use the chess application, start by logging in or creating an account!");
         System.out.println("Type -l and hit enter to log in, or type -r and hit enter to create an account.");
         System.out.println("Once you've entered a command, the terminal will walk you through the next steps.");
@@ -131,7 +131,7 @@ public class ChessClient {
             server.register(new RegisterRequest(username, password, email));
         }
         catch (DataAccessException e) {
-            System.out.println("Caught ya ;)\n" + e.getMessage()); //implement real error handling later
+            System.out.println("Caught ya ;)\n" + e.getMessage() + "  code: " + e.getCode()); //implement real error handling later
         }
 
         postLoginRepl();

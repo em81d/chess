@@ -37,7 +37,7 @@ public class AuthDAOTests {
     }
 
     @Test
-    public void testAddAuthFail() throws ServerResponseException {
+    public void testAddAuthFail() {
         Assertions.assertThrows(ServerResponseException.class, () -> dao.createAuth(null));
         Assertions.assertThrows(ServerResponseException.class, () -> dao.createAuth("this username is way way way way" +
                 " too long so it is never going to fit in my varchar(100) data object!!!"));
@@ -47,7 +47,6 @@ public class AuthDAOTests {
     @Test
     public void testGetAuthSuccess() throws DataAccessException {
         userDao.createUser(new UserData("em", "1234", "i@mail.com"));
-        UserData user = userDao.getUser("em");
         String token = dao.createAuth("user1");
 
         Assertions.assertDoesNotThrow(() -> dao.getAuth(token));
@@ -79,7 +78,7 @@ public class AuthDAOTests {
         dao.createAuth("user3");
 
         Assertions.assertDoesNotThrow(() -> dao.clearAuths());
-        Assertions.assertEquals(dao, new AuthDAOsql());
+        Assertions.assertEquals(new AuthDAOsql(), dao);
     }
 
 

@@ -41,7 +41,7 @@ public class ServerFacadeTests {
     @Test
     public void registerSuccess() throws ServerResponseException {
         RegisterResult res = facade.register(new RegisterRequest("user1", "password", "email"));
-        Assertions.assertEquals(res.status(), 200);
+        Assertions.assertEquals(200, res.status());
     }
 
     @Test
@@ -63,7 +63,7 @@ public class ServerFacadeTests {
         facade.register(new RegisterRequest("user3", "pwd", "email"));
         LoginResult res = facade.login(new LoginRequest("user3", "pwd"));
 
-        Assertions.assertEquals(res.status(), 200);
+        Assertions.assertEquals(200, res.status());
 
     }
 
@@ -84,7 +84,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void logoutFail() throws ServerResponseException {
+    public void logoutFail() {
         // no auth
         Assertions.assertThrows(ServerResponseException.class, () -> facade.logout(new LogoutRequest(null)));
 
@@ -111,7 +111,7 @@ public class ServerFacadeTests {
         int id = facade.create(new CreateRequest(auth, "game3")).gameID();
         JoinResult res = facade.join(new JoinRequest(auth, "BLACK", id));
 
-        Assertions.assertEquals(res, new JoinResult(200));
+        Assertions.assertEquals(new JoinResult(200), res);
     }
 
     @Test
@@ -135,7 +135,7 @@ public class ServerFacadeTests {
         String auth = facade.register(new RegisterRequest("user8", "alkdjhvdj", "email")).authToken();
 
         ListResult res = facade.listGames(new ListRequest(auth));
-        Assertions.assertEquals(res.games(), new ArrayList<AbbreviatedGame>());
+        Assertions.assertEquals(new ArrayList<AbbreviatedGame>(), res.games());
 
         facade.create(new CreateRequest(auth, "myGame1"));
         facade.create(new CreateRequest(auth, "myGame2"));
@@ -174,7 +174,7 @@ public class ServerFacadeTests {
 
         //check that games were deleted
         auth = facade.register(new RegisterRequest("user9", "p", "e")).authToken();
-        Assertions.assertEquals(facade.listGames(new ListRequest(auth)).games(), new ArrayList<AbbreviatedGame>());
+        Assertions.assertEquals(new ArrayList<AbbreviatedGame>(), facade.listGames(new ListRequest(auth)).games());
     }
 
 }

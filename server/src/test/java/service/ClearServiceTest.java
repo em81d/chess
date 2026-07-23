@@ -39,8 +39,8 @@ public class ClearServiceTest {
 
         cs.clear(new ClearRequest());
 
-        Assertions.assertEquals(us, new UserService(new UserDAOMemory(), new AuthDAOMemory()));
-        Assertions.assertEquals(gs, new GameService(new UserDAOMemory(), new AuthDAOMemory(), new GameDAOMemory()));
+        Assertions.assertEquals(new UserService(new UserDAOMemory(), new AuthDAOMemory()), us);
+        Assertions.assertEquals(new GameService(new UserDAOMemory(), new AuthDAOMemory(), new GameDAOMemory()), gs);
 
     }
 

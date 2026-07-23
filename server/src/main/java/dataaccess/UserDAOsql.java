@@ -12,9 +12,6 @@ import java.util.ArrayList;
 
 public class UserDAOsql extends SqlDAO implements UserDAO {
 
-    //stores users, then there will be one that stores games, one that stores authTokens, etc
-    private ArrayList<UserData> users;
-
 
     public UserDAOsql() {
         System.out.println("trying to start server...");
