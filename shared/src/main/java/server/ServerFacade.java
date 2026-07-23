@@ -50,7 +50,7 @@ public class ServerFacade {
     }
 
     public JoinResult join(JoinRequest req) throws ServerResponseException {
-        Map<String, Object> body = Map.of("color", req.color(), "gameID", req.gameID());
+        Map<String, Object> body = Map.of("playerColor", req.color(), "gameID", req.gameID());
         HttpRequest request = buildRequest("PUT", "/game", body, req.authToken());
         HttpResponse<String> response = sendRequest(request);
         return handleResponse(response, JoinResult.class);
@@ -64,7 +64,7 @@ public class ServerFacade {
 
     }
 
-    public ClearResult clearGames(ClearRequest req) throws ServerResponseException {
+    public ClearResult clear(ClearRequest req) throws ServerResponseException {
         HttpRequest request = buildRequest("DELETE", "/db", null, null);
         HttpResponse<String> response = sendRequest(request);
         return handleResponse(response, ClearResult.class);
