@@ -2,10 +2,12 @@ package client;
 
 import exceptions.DataAccessException;
 import exceptions.ServerResponseException;
-import reqres.LoginRequest;
-import reqres.RegisterRequest;
+import model.GameData;
+import reqres.*;
 import server.ServerFacade;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Scanner;
 
 public class ChessClient {
@@ -70,13 +72,12 @@ public class ChessClient {
         String password = scanner.nextLine();
 
         try {
-            server.login(new LoginRequest(username, password));
+            String auth = server.login(new LoginRequest(username, password)).authToken();
+            postLoginRepl(auth);
         }
         catch (Exception e) {
             System.out.println("caught you ;)\n " + e.getMessage());
         }
-
-        postLoginRepl();
 
     }
 
@@ -131,22 +132,22 @@ public class ChessClient {
         }
 
         try {
-            server.register(new RegisterRequest(username, password, email));
+            String auth = server.register(new RegisterRequest(username, password, email)).authToken();
+            postLoginRepl(auth);
         }
         catch (DataAccessException e) {
             System.out.println("Caught ya ;)\n" + e.getMessage() + "  code: " + e.getCode()); //implement real error handling later
         }
 
-        postLoginRepl();
     }
 
 
-    public void postLoginRepl() {
+    public void postLoginRepl(String auth) {
         String result = "";
         Scanner scanner = new Scanner(System.in);
 
         while (!result.equals("-e")) {
-            System.out.println("-h for help \t|\t -e to exit and logout \t|\t -c to create a game \t|\t -l to list existing " +
+            System.out.println("\n-h for help \t|\t -e to exit and logout \t|\t -c to create a game \t|\t -l to list existing " +
                     "games \t|\t -p to play a game \t|\t -o to observe a game ");
 
             try {
@@ -156,19 +157,19 @@ public class ChessClient {
                     printPostloginHelp();
                 }
                 else if (result.equals("-e")) {
-                    logoutUser();
+                    logoutUser(auth);
                 }
                 else if (result.equals("-c")) {
-                    createGame(scanner);
+                    createGame(auth, scanner);
                 }
                 else if (result.equals("-l")) {
-                    listGames();
+                    listGames(auth);
                 }
                 else if (result.equals("-p")) {
-                    joinGame(scanner);
+                    joinGame(auth, scanner);
                 }
                 else if (result.equals("-o")) {
-                    observeGame(scanner);
+                    observeGame(auth, scanner);
                 }
             }
             catch (Exception e) {
@@ -189,23 +190,105 @@ public class ChessClient {
                 "all done playing, it's a simple -e \nto exit and log out. Happy chess playing!\n\t\t\t\t\t\t*****\t\t\t");
     }
 
-    public void logoutUser() {
+    public void logoutUser(String auth) {
+        try {
+            server.logout(new LogoutRequest(auth));
+        }
+        catch (Exception e) {
+            System.out.println("caught you ;) couldn't log out\n " + e.getMessage());
+        }
+    }
+
+    public void createGame(String auth, Scanner scanner) {
+        try {
+            String name = "";
+            while (name.isEmpty()) {
+                System.out.print("What would you like to name your game? ");
+                name = scanner.nextLine();
+                if (name.length() > 99) {
+                    name = "";
+                    System.out.println("Your game's name needs to be less than 100 characters.");
+                }
+            }
+            server.create(new CreateRequest(auth, name));
+        }
+        catch (Exception e) {
+            System.out.println("Caught ya ;) couldn't create \n " + e.getMessage());
+        }
+    }
+
+    public void listGames(String auth) {
+        try {
+            Collection<GameData> games = server.listGames(new ListRequest(auth)).games();
+            int gameNumber = 1;
+            for (GameData game : games) {
+                System.out.println(gameNumber + ".\tName: " + game.gameName() + "\n\tPlaying as white: " +
+                        printWhiteUsername(game) + "\n\tPlaying as black: " + printBlackUsername(game) + '\n');
+                gameNumber++;
+            }
+        }
+        catch (ServerResponseException e) {
+            System.out.println("Caught ya ;) couldn't list\n " + e.getMessage());
+        }
+    }
+
+    public String printWhiteUsername(GameData game) {
+        if (game.whiteUsername() == null) {
+            return "________";
+        }
+        else {
+            return game.whiteUsername();
+        }
+    }
+
+    public String printBlackUsername(GameData game) {
+        if (game.blackUsername() == null) {
+            return "________";
+        }
+        else {
+            return game.blackUsername();
+        }
+    }
+
+    public void joinGame(String auth, Scanner scanner) {
+        try {
+            System.out.print("Which game would you like to join? Game number: ");
+            int gameId = Integer.parseInt(scanner.nextLine());
+
+
+            try {
+                System.out.print("BLACK or WHITE: ");
+                String color = scanner.nextLine();
+                server.join(new JoinRequest(auth, color, gameId));
+                postJoinRepl();
+            }
+            catch (ServerResponseException e) {
+                System.out.println("Try again! It's possible that that game does not exist, that spot is taken," +
+                        " or your color was invalid.");
+            }
+        }
+        catch (Exception e) {
+            System.out.println("Game id should be an integer.");
+        }
 
     }
 
-    public void createGame(Scanner scanner) {
-
+    public void observeGame(String auth, Scanner scanner) {
+        try {
+            System.out.println("Which game would you like to observe? Game number: ");
+            int gameID = Integer.parseInt(scanner.nextLine());
+            observeRepl();
+        }
+        catch (Exception e) {
+            System.out.println("invalid game id!");
+        }
     }
 
-    public void listGames() {
-
+    public void postJoinRepl() {
+//        drawBoard(true, )
     }
 
-    public void joinGame(Scanner scanner) {
-
-    }
-
-    public void observeGame(Scanner scanner) {
+    public void observeRepl() {
 
     }
 

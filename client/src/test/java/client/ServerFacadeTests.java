@@ -1,7 +1,8 @@
 package client;
 
+import chess.ChessGame;
 import exceptions.ServerResponseException;
-import model.AbbreviatedGame;
+import model.GameData;
 import org.junit.jupiter.api.*;
 import reqres.*;
 import server.Server;
@@ -135,17 +136,17 @@ public class ServerFacadeTests {
         String auth = facade.register(new RegisterRequest("user8", "alkdjhvdj", "email")).authToken();
 
         ListResult res = facade.listGames(new ListRequest(auth));
-        Assertions.assertEquals(new ArrayList<AbbreviatedGame>(), res.games());
+        Assertions.assertEquals(new ArrayList<GameData>(), res.games());
 
         facade.create(new CreateRequest(auth, "myGame1"));
         facade.create(new CreateRequest(auth, "myGame2"));
         facade.create(new CreateRequest(auth, "myGame3"));
 
-        Collection<AbbreviatedGame> actual = facade.listGames(new ListRequest(auth)).games();
-        Collection<AbbreviatedGame> expected = new ArrayList<>();
-        expected.add(new AbbreviatedGame(1, null, null, "myGame1"));
-        expected.add(new AbbreviatedGame(2, null, null, "myGame2"));
-        expected.add(new AbbreviatedGame(3, null, null, "myGame3"));
+        Collection<GameData> actual = facade.listGames(new ListRequest(auth)).games();
+        Collection<GameData> expected = new ArrayList<>();
+        expected.add(new GameData(1, null, null, "myGame1", new ChessGame()));
+        expected.add(new GameData(2, null, null, "myGame2", new ChessGame()));
+        expected.add(new GameData(3, null, null, "myGame3", new ChessGame()));
 
         Assertions.assertEquals(actual, expected);
     }
@@ -174,7 +175,7 @@ public class ServerFacadeTests {
 
         //check that games were deleted
         auth = facade.register(new RegisterRequest("user9", "p", "e")).authToken();
-        Assertions.assertEquals(new ArrayList<AbbreviatedGame>(), facade.listGames(new ListRequest(auth)).games());
+        Assertions.assertEquals(new ArrayList<GameData>(), facade.listGames(new ListRequest(auth)).games());
     }
 
 }

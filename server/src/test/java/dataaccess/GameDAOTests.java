@@ -2,7 +2,6 @@ package dataaccess;
 
 import chess.ChessGame;
 import exceptions.ServerResponseException;
-import model.AbbreviatedGame;
 import model.GameData;
 import org.junit.jupiter.api.*;
 import service.ClearService;
@@ -101,22 +100,22 @@ public class GameDAOTests {
         int id2 = dao.createGame("game2");
         int id3 = dao.createGame("game3");
 
-        AbbreviatedGame g1 = new AbbreviatedGame(id1, null, null, "game1");
-        AbbreviatedGame g2 = new AbbreviatedGame(id2, null, null, "game2");
-        AbbreviatedGame g3 = new AbbreviatedGame(id3, null, null, "game3");
-        Collection<AbbreviatedGame> expected = new ArrayList<>();
+        GameData g1 = new GameData(id1, null, null, "game1", new ChessGame());
+        GameData g2 = new GameData(id2, null, null, "game2", new ChessGame());
+        GameData g3 = new GameData(id3, null, null, "game3", new ChessGame());
+        Collection<GameData> expected = new ArrayList<>();
         expected.add(g1);
         expected.add(g2);
         expected.add(g3);
 
-        Collection<AbbreviatedGame> actual = dao.listGames();
+        Collection<GameData> actual = dao.listGames();
 
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     public void listGamesFail() throws ServerResponseException {
-        Assertions.assertEquals(new ArrayList<AbbreviatedGame>(), dao.listGames());
+        Assertions.assertEquals(new ArrayList<GameData>(), dao.listGames());
     }
 
     @Test
@@ -127,7 +126,7 @@ public class GameDAOTests {
 
         dao.clearGames();
 
-        Collection<AbbreviatedGame> expected = new ArrayList<>();
+        Collection<GameData> expected = new ArrayList<>();
         Assertions.assertEquals(expected, dao.listGames());
     }
 

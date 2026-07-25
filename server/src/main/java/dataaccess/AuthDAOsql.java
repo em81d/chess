@@ -75,7 +75,7 @@ public class AuthDAOsql extends SqlDAO implements AuthDAO {
                 preparedStatement.setString(1, authToken);
                 int rowsAffected = preparedStatement.executeUpdate();
 
-                return rowsAffected != 1;
+                return rowsAffected != 0;
             }
         }
         catch (SQLException | DataAccessException e) {

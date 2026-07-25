@@ -29,7 +29,7 @@ public class UserDAOsql extends SqlDAO implements UserDAO {
             try (var preparedStatement = conn.prepareStatement("INSERT INTO user (username, email, password) VALUES(?, ?, ?)")) {
                 preparedStatement.setString(1, u.username());
                 preparedStatement.setString(2, u.email());
-                preparedStatement.setString(3, hashUserPassword(u.username(), u.password()));
+                preparedStatement.setString(3, hashUserPassword(u.password()));
 
                 preparedStatement.executeUpdate();
 
@@ -41,7 +41,7 @@ public class UserDAOsql extends SqlDAO implements UserDAO {
 
     }
 
-    private String hashUserPassword(String username, String clearTextPassword) {
+    private String hashUserPassword(String clearTextPassword) {
         String hashedPassword = BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
 
         // write the hashed password in database along with the user's other information

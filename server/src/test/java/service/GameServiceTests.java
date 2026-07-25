@@ -1,12 +1,13 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.AuthDAOMemory;
 import dataaccess.GameDAOMemory;
 import dataaccess.UserDAOMemory;
 import exceptions.AlreadyTakenException;
 import exceptions.DataAccessException;
 import exceptions.NoAuthException;
-import model.AbbreviatedGame;
+import model.GameData;
 import org.junit.jupiter.api.*;
 import reqres.*;
 
@@ -54,10 +55,10 @@ public class GameServiceTests {
 
         ListResult actual = gs.listGames(new ListRequest(token));
 
-        ArrayList<AbbreviatedGame> games = new ArrayList<>();
-        games.add(new AbbreviatedGame(100, null, null, "game1"));
-        games.add(new AbbreviatedGame(101, null, null, "game2"));
-        games.add(new AbbreviatedGame(102, null, null, "game3"));
+        ArrayList<GameData> games = new ArrayList<>();
+        games.add(new GameData(100, null, null, "game1", new ChessGame()));
+        games.add(new GameData(101, null, null, "game2", new ChessGame()));
+        games.add(new GameData(102, null, null, "game3", new ChessGame()));
         ListResult expected = new ListResult(games, 200);
 
         Assertions.assertEquals(expected, actual);

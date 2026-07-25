@@ -1,6 +1,6 @@
 package reqres;
-import model.AbbreviatedGame;
+import model.GameData;
 import java.util.Collection;
 
-public record ListResult(Collection<AbbreviatedGame> games, int status) {
+public record ListResult(Collection<GameData> games, int status) {
 }

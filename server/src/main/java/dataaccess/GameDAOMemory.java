@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import model.AbbreviatedGame;
 import model.GameData;
 
 import java.util.ArrayList;
@@ -71,12 +70,8 @@ public class GameDAOMemory implements GameDAO {
     }
 
     @Override
-    public Collection<AbbreviatedGame> listGames() {
-        Collection<AbbreviatedGame> abbreviatedGames = new ArrayList<>();
-        for (GameData game : games) {
-            abbreviatedGames.add(new AbbreviatedGame(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName()));
-        }
-        return abbreviatedGames;
+    public Collection<GameData> listGames() {
+        return games;
     }
 
     @Override

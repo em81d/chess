@@ -4,7 +4,6 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import exceptions.DataAccessException;
 import exceptions.ServerResponseException;
-import model.AbbreviatedGame;
 import model.GameData;
 
 import java.sql.Connection;
@@ -140,8 +139,8 @@ public class GameDAOsql extends SqlDAO implements GameDAO {
     }
 
     @Override
-    public Collection<AbbreviatedGame> listGames() throws ServerResponseException {
-        Collection<AbbreviatedGame> result = new ArrayList<>();
+    public Collection<GameData> listGames() throws ServerResponseException {
+        Collection<GameData> result = new ArrayList<>();
 
         try (Connection conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement("SELECT id, name, whiteusername, blackusername, json FROM game")) {
@@ -151,8 +150,9 @@ public class GameDAOsql extends SqlDAO implements GameDAO {
                         String whiteusername = stmt.getString("whiteusername");
                         String blackusername = stmt.getString("blackusername");
                         int id = stmt.getInt("id");
+                        ChessGame game = new Gson().fromJson(stmt.getString("json"), ChessGame.class);
 
-                        result.add(new AbbreviatedGame(id, whiteusername, blackusername, name));
+                        result.add(new GameData(id, whiteusername, blackusername, name, game));
                     }
                 }
             }

@@ -1,7 +1,6 @@
 package dataaccess;
 import chess.ChessGame;
 import exceptions.ServerResponseException;
-import model.AbbreviatedGame;
 import model.GameData;
 
 import java.util.Collection;
@@ -20,7 +19,7 @@ public interface GameDAO {
 
     int createGame(String name) throws ServerResponseException;
     GameData getGame(int gameID) throws ServerResponseException;
-    Collection<AbbreviatedGame> listGames() throws ServerResponseException;
+    Collection<GameData> listGames() throws ServerResponseException;
     GameData updateGame(int gameID, ChessGame game) throws ServerResponseException;
     GameData updateGame(GameData game, String color, String username) throws ServerResponseException;
     void clearGames() throws ServerResponseException;
