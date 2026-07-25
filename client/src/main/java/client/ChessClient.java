@@ -34,7 +34,7 @@ public class ChessClient {
                 result = scanner.nextLine();
 
                 if (result.equals("-h")) {
-                    printHelpDialog();
+                    printPreloginHelp();
                 }
                 else if (result.equals("-l")) {
                     loginUser(scanner);
@@ -45,13 +45,16 @@ public class ChessClient {
             }
             catch (Exception e) {
                 System.out.println("invalid input.");
+                System.out.println(e);
+                result = "-q";
+
             }
         }
 
         scanner.close();
     }
 
-    public void printHelpDialog() {
+    public void printPreloginHelp() {
         System.out.println("To use the chess application, start by logging in or creating an account!");
         System.out.println("Type -l and hit enter to log in, or type -r and hit enter to create an account.");
         System.out.println("Once you've entered a command, the terminal will walk you through the next steps.");
@@ -139,6 +142,70 @@ public class ChessClient {
 
 
     public void postLoginRepl() {
+        String result = "";
+        Scanner scanner = new Scanner(System.in);
+
+        while (!result.equals("-e")) {
+            System.out.println("-h for help \t|\t -e to exit and logout \t|\t -c to create a game \t|\t -l to list existing " +
+                    "games \t|\t -p to play a game \t|\t -o to observe a game ");
+
+            try {
+                result = scanner.nextLine();
+
+                if (result.equals("-h")) {
+                    printPostloginHelp();
+                }
+                else if (result.equals("-e")) {
+                    logoutUser();
+                }
+                else if (result.equals("-c")) {
+                    createGame(scanner);
+                }
+                else if (result.equals("-l")) {
+                    listGames();
+                }
+                else if (result.equals("-p")) {
+                    joinGame(scanner);
+                }
+                else if (result.equals("-o")) {
+                    observeGame(scanner);
+                }
+            }
+            catch (Exception e) {
+                System.out.println("invalid input.");
+                result = "-e";
+            }
+        }
+
+//        scanner.close();
+    }
+
+    public void printPostloginHelp() {
+
+        System.out.println("\nWelcome to your account homepage! Start by hitting -l to see what games have already\n been created," +
+                " and then if you'd like you can join one to play with -p! When you join a game, you \nwill need the game id that " +
+                "is printed during the list dialog. If you aren't feeling ready to \njoin a game just yet, you can also pick a game id" +
+                "and join as an observer with -o. If there isn't \nalready a game you want to join, create one with -c. When you're " +
+                "all done playing, it's a simple -e \nto exit and log out. Happy chess playing!\n\t\t\t\t\t\t*****\t\t\t");
+    }
+
+    public void logoutUser() {
+
+    }
+
+    public void createGame(Scanner scanner) {
+
+    }
+
+    public void listGames() {
+
+    }
+
+    public void joinGame(Scanner scanner) {
+
+    }
+
+    public void observeGame(Scanner scanner) {
 
     }
 
