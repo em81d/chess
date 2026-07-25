@@ -1,14 +1,20 @@
 package client;
 
+import chess.*;
 import exceptions.DataAccessException;
 import exceptions.ServerResponseException;
 import model.GameData;
 import reqres.*;
 import server.ServerFacade;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Scanner;
+
+import static chess.ChessGame.TeamColor.*;
+import static ui.EscapeSequences.*;
+import static ui.EscapeSequences.BLACK_KING;
+import static ui.EscapeSequences.BLACK_PAWN;
+
 
 public class ChessClient {
     private final ServerFacade server;
@@ -260,7 +266,7 @@ public class ChessClient {
                 System.out.print("BLACK or WHITE: ");
                 String color = scanner.nextLine();
                 server.join(new JoinRequest(auth, color, gameId));
-                postJoinRepl();
+                postJoinRepl(color.equals("WHITE"));
             }
             catch (ServerResponseException e) {
                 System.out.println("Try again! It's possible that that game does not exist, that spot is taken," +
@@ -284,12 +290,140 @@ public class ChessClient {
         }
     }
 
-    public void postJoinRepl() {
-//        drawBoard(true, )
+    public void postJoinRepl(boolean isWhite) {
+        drawBoard(isWhite, new ChessGame());
     }
 
     public void observeRepl() {
+        drawBoard(true, new ChessGame());
+    }
+
+
+    public void drawBoard(boolean isWhite, ChessGame game) {
+        ChessBoard board = game.getBoard();
+        System.out.print("\u001b[49;38;2;127;161;124;1m");
+//        System.out.print("\u001b[35;105;1m 1 ");
+
+        if (isWhite) {
+
+            System.out.println("    a   b   c   d   e  f   g   h   \u001b[49m");
+
+            ChessPosition pos;
+            for (int i=8; i>0; i--) {
+                System.out.print("\u001b[49;38;2;127;161;124;1m " + i + " \u001b[30m");
+                for (int j=8; j>0; j--) {
+                    pos = new ChessPosition(i,j);
+                    if (i % 2 == j % 2) {
+                        //white square
+                        System.out.print("\u001b[48;2;214;191;206m");
+                    }
+                    else {
+                        //black square
+                        System.out.print("\u001b[48;2;128;102;119m");
+                    }
+                    if (board.getPiece(pos) == null) {
+                        System.out.print(EMPTY);
+                    }
+                    else {
+                        printPiece(board.getPiece(pos));
+                    }
+                }
+                System.out.print("\u001b[49;38;2;127;161;124;1m " + i + "  \u001b[49m\n");
+            }
+            System.out.print("\u001b[49;38;2;127;161;124;1m");
+            System.out.println("    a   b   c   d   e  f   g   h   \u001b[49m");
+        }
+        else {
+            System.out.println("    h   g   f   e   d  c   b   a   \u001b[49m");
+
+            ChessPosition pos;
+            for (int i=1; i<9; i++) {
+                System.out.print("\u001b[49;38;2;127;161;124;1m " + i + " \u001b[30m");
+                for (int j=1; j<9; j++) {
+                    pos = new ChessPosition(i,j);
+                    if (i % 2 == j % 2) {
+                        //white square
+                        System.out.print("\u001b[48;2;214;191;206m");
+                    }
+                    else {
+                        //black square
+                        System.out.print("\u001b[48;2;128;102;119m");
+                    }
+                    if (board.getPiece(pos) == null) {
+                        System.out.print(EMPTY);
+                    }
+                    else {
+                        printPiece(board.getPiece(pos));
+                    }
+                }
+                System.out.print("\u001b[49;38;2;127;161;124;1m " + i + "  \u001b[49m\n");
+            }
+            System.out.print("\u001b[49;38;2;127;161;124;1m");
+            System.out.println("    h   g   f   e   d  c   b   a   \u001b[49m");
+        }
+        System.out.print("\u001b[39m");
 
     }
+
+    public void printPiece(ChessPiece piece) {
+        if (piece.getTeamColor() == WHITE){
+            switch (piece.getPieceType()) {
+                case ROOK -> {
+                    System.out.print(WHITE_ROOK);
+                }
+                case BISHOP -> {
+                    System.out.print(WHITE_BISHOP);
+                }
+                case QUEEN -> {
+                    System.out.print(WHITE_QUEEN);
+                }
+                case KING -> {
+                    System.out.print(WHITE_KING);
+                }
+                case KNIGHT -> {
+                    System.out.print(WHITE_KNIGHT);
+                }
+                case PAWN -> {
+                    System.out.print(WHITE_PAWN);
+                }
+                default -> {
+                    ;
+                }
+            }
+        }
+        else {
+            switch (piece.getPieceType()) {
+                case ROOK -> {
+                    System.out.print(BLACK_ROOK);
+                }
+                case BISHOP -> {
+                    System.out.print(BLACK_BISHOP);
+                }
+                case QUEEN -> {
+                    System.out.print(BLACK_QUEEN);
+                }
+                case KING -> {
+                    System.out.print(BLACK_KING);
+                }
+                case KNIGHT -> {
+                    System.out.print(BLACK_KNIGHT);
+                }
+                case PAWN -> {
+                    System.out.print(BLACK_PAWN);
+                }
+                default -> {
+                    ;
+                }
+            }
+        }
+    }
+
+    //for testing draw board
+//    public static void main(String[] args) {
+//        drawBoard(true, new ChessGame());
+//        drawBoard(false, new ChessGame());
+//    }
+
+
 
 }
