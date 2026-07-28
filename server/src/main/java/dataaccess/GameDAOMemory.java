@@ -81,7 +81,7 @@ public class GameDAOMemory implements GameDAO {
     }
 
     public int newGameId() {
-        return gameCount + 100;
+        return gameCount + 1;
     }
 
 

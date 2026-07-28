@@ -1,6 +1,7 @@
 package dataaccess;
 
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -17,7 +18,7 @@ public class UserDAOMemory implements UserDAO {
 
     @Override
     public void createUser(UserData u) {
-        users.add(u);
+        users.add(new UserData(u.username(), hashUserPassword(u.password()), u.email()));
         //System.out.println("printing users from UserDAOMemory class");
         //System.out.println(users);
     }
@@ -31,6 +32,13 @@ public class UserDAOMemory implements UserDAO {
             }
         }
         return null;
+    }
+
+    private String hashUserPassword(String clearTextPassword) {
+        String hashedPassword = BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
+
+        // write the hashed password in database along with the user's other information
+        return hashedPassword;
     }
 
     @Override
