@@ -7,6 +7,8 @@ import model.GameData;
 import reqres.*;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 import static chess.ChessGame.TeamColor.*;
@@ -16,7 +18,11 @@ import static ui.EscapeSequences.BLACK_PAWN;
 
 
 public class ChessClient {
+
+
     private final ServerFacade server;
+    private Map<Integer,Integer> gameIDs;
+
 
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -138,10 +144,11 @@ public class ChessClient {
 
         try {
             String auth = server.register(new RegisterRequest(username, password, email)).authToken();
+            System.out.println("\nLogin success!");
             postLoginRepl(auth);
         }
         catch (DataAccessException e) {
-            System.out.println("Username is already taken! Try a different one."); //implement real error handling later
+            System.out.println("Username is already taken! Try a different one.\n"); //implement real error handling later
         }
 
     }
@@ -176,6 +183,9 @@ public class ChessClient {
                 else if (result.equals("-o")) {
                     observeGame(auth, scanner);
                 }
+                else {
+                    System.out.println("invalid input.");
+                }
             }
             catch (Exception e) {
                 System.out.println("invalid input.");
@@ -198,6 +208,7 @@ public class ChessClient {
     public void logoutUser(String auth) {
         try {
             server.logout(new LogoutRequest(auth));
+            System.out.println("\nLogout success.\n");
         }
         catch (Exception e) {
             System.out.println("Unable to log out.");
@@ -225,11 +236,20 @@ public class ChessClient {
     public void listGames(String auth) {
         try {
             Collection<GameData> games = server.listGames(new ListRequest(auth)).games();
+            gameIDs = new HashMap<>();
+
             int gameNumber = 1;
             for (GameData game : games) {
                 System.out.println(gameNumber + ".\tName: " + game.gameName() + "\n\tPlaying as white: " +
                         printWhiteUsername(game) + "\n\tPlaying as black: " + printBlackUsername(game) + '\n');
+
+                //store which game number corresponds to which game, fresh each time games are listed
+                gameIDs.put(gameNumber, game.gameID());
+
                 gameNumber++;
+            }
+            if (games.isEmpty()) {
+                System.out.println("\nNo games to display.\n");
             }
         }
         catch (ServerResponseException e) {
@@ -258,19 +278,25 @@ public class ChessClient {
     public void joinGame(String auth, Scanner scanner) {
         try {
             System.out.print("Which game would you like to join? Game number: ");
-            int gameId = Integer.parseInt(scanner.nextLine());
+            int gameNumber = Integer.parseInt(scanner.nextLine());
 
+            if (!gameIDs.containsKey(gameNumber)) {
+                System.out.println("Not a valid game number. Try listing the games first.");
+                System.out.println(gameIDs);
+            }
+            else {
+                try {
+                    System.out.print("BLACK or WHITE: ");
+                    String color = scanner.nextLine();
+                    server.join(new JoinRequest(auth, color, gameIDs.get(gameNumber)));
+                    postJoinRepl(color.equals("WHITE"));
+                }
+                catch (ServerResponseException e) {
+                    System.out.println("Try again! It's possible that that game does not exist, that spot is taken," +
+                            " or your color was invalid.");
+                }
+            }
 
-            try {
-                System.out.print("BLACK or WHITE: ");
-                String color = scanner.nextLine();
-                server.join(new JoinRequest(auth, color, gameId));
-                postJoinRepl(color.equals("WHITE"));
-            }
-            catch (ServerResponseException e) {
-                System.out.println("Try again! It's possible that that game does not exist, that spot is taken," +
-                        " or your color was invalid.");
-            }
         }
         catch (Exception e) {
             System.out.println("Invalid game number: game number should be the integer number printed next to the game you would like to join.");
@@ -282,7 +308,14 @@ public class ChessClient {
         try {
             System.out.println("Which game would you like to observe? Game number: ");
             int gameNumber = Integer.parseInt(scanner.nextLine());
-            observeRepl(gameNumber);
+
+            if (!gameIDs.containsKey(gameNumber)) {
+                System.out.println("Not a valid game number. Try listing the games first.");
+            }
+            else {
+                observeRepl(gameIDs.get(gameNumber));
+            }
+
         }
         catch (Exception e) {
             System.out.println("Invalid game number: game number should be the integer number printed next to the game you would like to join.");
