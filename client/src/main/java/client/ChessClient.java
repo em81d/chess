@@ -311,21 +311,7 @@ public class ChessClient {
             for (int i=8; i>0; i--) {
                 System.out.print("\u001b[49;38;2;127;161;124;1m " + i + " \u001b[30m");
                 for (int j=8; j>0; j--) {
-                    pos = new ChessPosition(i,j);
-                    if (i % 2 == j % 2) {
-                        //white square
-                        System.out.print("\u001b[48;2;214;191;206m");
-                    }
-                    else {
-                        //black square
-                        System.out.print("\u001b[48;2;128;102;119m");
-                    }
-                    if (board.getPiece(pos) == null) {
-                        System.out.print(EMPTY);
-                    }
-                    else {
-                        printPiece(board.getPiece(pos));
-                    }
+                    printSquare(i,j,board);
                 }
                 System.out.print("\u001b[49;38;2;127;161;124;1m " + i + "  \u001b[49m\n");
             }
@@ -339,21 +325,7 @@ public class ChessClient {
             for (int i=1; i<9; i++) {
                 System.out.print("\u001b[49;38;2;127;161;124;1m " + i + " \u001b[30m");
                 for (int j=1; j<9; j++) {
-                    pos = new ChessPosition(i,j);
-                    if (i % 2 == j % 2) {
-                        //white square
-                        System.out.print("\u001b[48;2;214;191;206m");
-                    }
-                    else {
-                        //black square
-                        System.out.print("\u001b[48;2;128;102;119m");
-                    }
-                    if (board.getPiece(pos) == null) {
-                        System.out.print(EMPTY);
-                    }
-                    else {
-                        printPiece(board.getPiece(pos));
-                    }
+                    printSquare(i,j,board);
                 }
                 System.out.print("\u001b[49;38;2;127;161;124;1m " + i + "  \u001b[49m\n");
             }
@@ -362,6 +334,24 @@ public class ChessClient {
         }
         System.out.print("\u001b[39m");
 
+    }
+
+    public void printSquare(int i, int j, ChessBoard board)  {
+        ChessPosition pos = new ChessPosition(i,j);
+        if (i % 2 == j % 2) {
+            //white square
+            System.out.print("\u001b[48;2;214;191;206m");
+        }
+        else {
+            //black square
+            System.out.print("\u001b[48;2;128;102;119m");
+        }
+        if (board.getPiece(pos) == null) {
+            System.out.print(EMPTY);
+        }
+        else {
+            printPiece(board.getPiece(pos));
+        }
     }
 
     public void printPiece(ChessPiece piece) {
