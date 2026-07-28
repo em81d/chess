@@ -282,7 +282,6 @@ public class ChessClient {
 
             if (!gameIDs.containsKey(gameNumber)) {
                 System.out.println("Not a valid game number. Try listing the games first.");
-                System.out.println(gameIDs);
             }
             else {
                 try {
@@ -338,24 +337,10 @@ public class ChessClient {
 
         if (isWhite) {
 
-            System.out.println("    a   b   c   d   e  f   g   h   \u001b[49m");
+            System.out.println("    a  b  c  d  e  f  g  h   \u001b[49m");
 
             ChessPosition pos;
             for (int i=8; i>0; i--) {
-                System.out.print("\u001b[49;38;2;127;161;124;1m " + i + " \u001b[30m");
-                for (int j=8; j>0; j--) {
-                    printSquare(i,j,board);
-                }
-                System.out.print("\u001b[49;38;2;127;161;124;1m " + i + "  \u001b[49m\n");
-            }
-            System.out.print("\u001b[49;38;2;127;161;124;1m");
-            System.out.println("    a   b   c   d   e  f   g   h   \u001b[49m");
-        }
-        else {
-            System.out.println("    h   g   f   e   d  c   b   a   \u001b[49m");
-
-            ChessPosition pos;
-            for (int i=1; i<9; i++) {
                 System.out.print("\u001b[49;38;2;127;161;124;1m " + i + " \u001b[30m");
                 for (int j=1; j<9; j++) {
                     printSquare(i,j,board);
@@ -363,7 +348,21 @@ public class ChessClient {
                 System.out.print("\u001b[49;38;2;127;161;124;1m " + i + "  \u001b[49m\n");
             }
             System.out.print("\u001b[49;38;2;127;161;124;1m");
-            System.out.println("    h   g   f   e   d  c   b   a   \u001b[49m");
+            System.out.println("    a  b  c  d  e  f  g  h   \u001b[49m");
+        }
+        else {
+            System.out.println("    h  g  f  e  d  c  b  a   \u001b[49m");
+
+            ChessPosition pos;
+            for (int i=1; i<9; i++) {
+                System.out.print("\u001b[49;38;2;127;161;124;1m " + i + " \u001b[30m");
+                for (int j=8; j>0; j--) {
+                    printSquare(i,j,board);
+                }
+                System.out.print("\u001b[49;38;2;127;161;124;1m " + i + "  \u001b[49m\n");
+            }
+            System.out.print("\u001b[49;38;2;127;161;124;1m");
+            System.out.println("    h  g  f  e  d  c  b  a   \u001b[49m");
         }
         System.out.print("\u001b[39m");
 
@@ -371,7 +370,7 @@ public class ChessClient {
 
     public void printSquare(int i, int j, ChessBoard board)  {
         ChessPosition pos = new ChessPosition(i,j);
-        if (i % 2 == j % 2) {
+        if (i % 2 != j % 2) {
             //white square
             System.out.print("\u001b[48;2;214;191;206m");
         }
