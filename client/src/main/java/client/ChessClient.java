@@ -407,12 +407,5 @@ public class ChessClient {
         }
     }
 
-    //for testing draw board
-//    public static void main(String[] args) {
-//        drawBoard(true, new ChessGame());
-//        drawBoard(false, new ChessGame());
-//    }
-
-
 
 }
