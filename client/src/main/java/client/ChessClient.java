@@ -5,7 +5,6 @@ import exceptions.DataAccessException;
 import exceptions.ServerResponseException;
 import model.GameData;
 import reqres.*;
-import server.ServerFacade;
 
 import java.util.Collection;
 import java.util.Scanner;
@@ -82,7 +81,7 @@ public class ChessClient {
             postLoginRepl(auth);
         }
         catch (Exception e) {
-            System.out.println("caught you ;)\n " + e.getMessage());
+            System.out.println("Login failed. Incorrect username or password");
         }
 
     }
@@ -142,7 +141,7 @@ public class ChessClient {
             postLoginRepl(auth);
         }
         catch (DataAccessException e) {
-            System.out.println("Caught ya ;)\n" + e.getMessage() + "  code: " + e.getCode()); //implement real error handling later
+            System.out.println("Username is already taken! Try a different one."); //implement real error handling later
         }
 
     }
@@ -201,7 +200,7 @@ public class ChessClient {
             server.logout(new LogoutRequest(auth));
         }
         catch (Exception e) {
-            System.out.println("caught you ;) couldn't log out\n " + e.getMessage());
+            System.out.println("Unable to log out.");
         }
     }
 
@@ -219,7 +218,7 @@ public class ChessClient {
             server.create(new CreateRequest(auth, name));
         }
         catch (Exception e) {
-            System.out.println("Caught ya ;) couldn't create \n " + e.getMessage());
+            System.out.println("Unable to create game.");
         }
     }
 
@@ -234,7 +233,7 @@ public class ChessClient {
             }
         }
         catch (ServerResponseException e) {
-            System.out.println("Caught ya ;) couldn't list\n " + e.getMessage());
+            System.out.println("Unable to list games.");
         }
     }
 
@@ -274,7 +273,7 @@ public class ChessClient {
             }
         }
         catch (Exception e) {
-            System.out.println("Game id should be an integer.");
+            System.out.println("Invalid game number: game number should be the integer number printed next to the game you would like to join.");
         }
 
     }
@@ -282,11 +281,11 @@ public class ChessClient {
     public void observeGame(String auth, Scanner scanner) {
         try {
             System.out.println("Which game would you like to observe? Game number: ");
-            int gameID = Integer.parseInt(scanner.nextLine());
-            observeRepl();
+            int gameNumber = Integer.parseInt(scanner.nextLine());
+            observeRepl(gameNumber);
         }
         catch (Exception e) {
-            System.out.println("invalid game id!");
+            System.out.println("Invalid game number: game number should be the integer number printed next to the game you would like to join.");
         }
     }
 
@@ -294,7 +293,7 @@ public class ChessClient {
         drawBoard(isWhite, new ChessGame());
     }
 
-    public void observeRepl() {
+    public void observeRepl(int gameNumber) {
         drawBoard(true, new ChessGame());
     }
 

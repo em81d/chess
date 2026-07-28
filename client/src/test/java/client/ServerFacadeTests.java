@@ -6,7 +6,6 @@ import model.GameData;
 import org.junit.jupiter.api.*;
 import reqres.*;
 import server.Server;
-import server.ServerFacade;
 
 import java.util.ArrayList;
 import java.util.Collection;

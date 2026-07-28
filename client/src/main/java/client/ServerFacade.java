@@ -1,5 +1,4 @@
-package server;
-import com.google.gson.JsonObject;
+package client;
 import exceptions.ServerResponseException;
 import reqres.*;
 
