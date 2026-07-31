@@ -13,5 +13,6 @@
     <orderEntry type="library" name="google.code.gson" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="junit.jupiter" level="project" />
     <orderEntry type="module" module-name="server" />
+    <orderEntry type="library" exported="" name="glassfish.tyrus.bundles.standalone.client" level="project" />
   </component>
 </module>
