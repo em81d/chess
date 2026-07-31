@@ -2,6 +2,7 @@ package server.websocket;
 
 import com.google.gson.Gson;
 import com.mysql.cj.protocol.a.BooleanValueEncoder;
+import exceptions.NoAuthException;
 import exceptions.ServerResponseException;
 import io.javalin.websocket.WsCloseContext;
 import io.javalin.websocket.WsCloseHandler;
@@ -10,8 +11,8 @@ import io.javalin.websocket.WsConnectHandler;
 import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
 import org.eclipse.jetty.websocket.api.Session;
-import websocket.commands.MakeMoveCommand;
-import websocket.commands.UserGameCommand;
+import org.jetbrains.annotations.NotNull;
+import websocket.commands.*;
 import websocket.messages.*;
 
 
@@ -28,19 +29,27 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     @Override
-    public void handleMessage(WsMessageContext ctx) {
+    public void handleMessage(@NotNull WsMessageContext ctx) throws Exception{
+        int gameId = -1;
+        Session session = ctx.session;
         try {
             UserGameCommand cmd = new Gson().fromJson(ctx.message(), UserGameCommand.class);
+            gameId = cmd.getGameID();
+            String username = getUsername(cmd.getAuthToken());          //how???
+            saveSession(gameId, session);       //adding to connection manager
+
             switch (cmd.getCommandType()) {
-                case CONNECT -> connect(cmd.getAuthToken(), ctx.session);
-                case MAKE_MOVE -> {
-                    MakeMoveCommand makeMove = (MakeMoveCommand) cmd;
-                    move(cmd.getAuthToken(), ctx.session, makeMove.getMove());
-                }
-                case LEAVE -> leave(cmd.getAuthToken(), ctx.session);
-                case RESIGN -> resign(cmd.getAuthToken(), ctx.session);
+                case CONNECT -> connect(session, username, (ConnectCommand) cmd);       //make the other three functions
+                case MAKE_MOVE -> move(session, username, (MakeMoveCommand) cmd);       //still need to deserialize the move
+                //deserialize the whole cmd as a MakeMoveCommand instead of a UserGameCommand
+                case LEAVE -> leave(session, username, (LeaveGameCommand) cmd);
+                case RESIGN -> resign(session, username, (ResignCommand) cmd);
             }
-        } catch (IOException ex) {
+        }
+        catch (NoAuthException ex) {
+            sendMessage(session, gameId, new ErrorMessage("Error: unauthorized"));  //will this ever get thrown?
+        }
+        catch (IOException ex) {
             ex.printStackTrace();
         }
     }
@@ -80,10 +89,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
 
     //chess methods
-    private void connect(String auth, Session session) throws IOException {
-        connections.add(session);
-        var message = String.format("%s has joined the game.", auth); //how do I get the user's name from here???
+    private void connect(Session session, String username, ConnectCommand cmd) throws IOException {
+        connections.add(session);       //update bc data structure changed
+        var message = String.format("%s has joined the game.", username);
         var notification = new NotificationMessage(message);
-        connections.broadcast(session, notification);
+        connections.broadcast(session, notification);   //update
     }
 }

@@ -7,7 +7,10 @@ import exceptions.DataAccessException;
 import exceptions.ServerResponseException;
 import model.GameData;
 import reqres.*;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
+import websocket.messages.ServerMessage;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -446,8 +449,14 @@ public class ChessClient implements NotificationHandler {
         }
     }
 
-    public void notify(NotificationMessage notification) {
-        System.out.println(SET_TEXT_COLOR_MAGENTA + notification.getMessage() + RESET_TEXT_COLOR);
+    @Override
+    public void notify(ServerMessage message) {
+        switch (message.getServerMessageType()) {
+            case NOTIFICATION -> System.out.println(SET_TEXT_COLOR_MAGENTA + ((NotificationMessage) message).getMessage() + RESET_TEXT_COLOR);
+            case ERROR -> System.out.println(SET_TEXT_COLOR_RED + ((ErrorMessage) message).getErrorMessage() + RESET_TEXT_COLOR);
+            case LOAD_GAME -> System.out.println(SET_TEXT_COLOR_GREEN + ((LoadGameMessage) message).getText() + RESET_TEXT_COLOR);
+        }
+
 
     }
 
