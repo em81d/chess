@@ -7,6 +7,7 @@ import exceptions.*;
 import io.javalin.*;
 import io.javalin.http.Context;
 import reqres.*;
+import server.websocket.WebSocketHandler;
 import service.*;
 
 public class Server {
@@ -18,6 +19,7 @@ public class Server {
     private final UserDAO userDao;
     private final AuthDAO authDao;
     private final GameDAO gameDao;
+    private final WebSocketHandler wsHandler;
 
     public Server() {
 
