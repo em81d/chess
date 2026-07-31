@@ -52,6 +52,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
 
     //pet shop methods
+    //incoming messages
 //    private void enter(String visitorName, Session session) throws IOException {
 //        connections.add(session);
 //        var message = String.format("%s is in the shop", visitorName);
@@ -66,6 +67,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 //        connections.remove(session);
 //    }
 //
+         //outgoing message from server
 //    public void makeNoise(String petName, String sound) throws ServerResponseException {
 //        try {
 //            var message = String.format("%s says %s", petName, sound);

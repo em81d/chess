@@ -27,6 +27,8 @@ public class Server {
         gameDao = new GameDAOMemory();
         authDao = new AuthDAOMemory();
 
+        wsHandler = new WebSocketHandler();
+
 
         userService = new UserService(userDao, authDao);
         gameService = new GameService(userDao, authDao, gameDao);
@@ -44,7 +46,12 @@ public class Server {
                 .exception(BadRequestException.class, this::badRequest)
                 .exception(AlreadyTakenException.class, this::alreadyTaken)
                 .exception(NoAuthException.class, this::noAuth)
-                .exception(ServerResponseException.class, this::serverError);
+                .exception(ServerResponseException.class, this::serverError)
+                .ws("/ws", ws -> {
+                    ws.onConnect(wsHandler);
+                    ws.onMessage(wsHandler);
+                    ws.onClose(wsHandler);
+                });
 
         // Register your endpoints and exception handlers here.
 
