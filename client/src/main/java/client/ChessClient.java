@@ -1,10 +1,13 @@
 package client;
 
 import chess.*;
+import client.websocket.NotificationHandler;
+import client.websocket.WebSocketFacade;
 import exceptions.DataAccessException;
 import exceptions.ServerResponseException;
 import model.GameData;
 import reqres.*;
+import websocket.messages.NotificationMessage;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,15 +20,17 @@ import static ui.EscapeSequences.BLACK_KING;
 import static ui.EscapeSequences.BLACK_PAWN;
 
 
-public class ChessClient {
+public class ChessClient implements NotificationHandler {
 
 
     private final ServerFacade server;
     private Map<Integer,Integer> gameIDs;
+    private final WebSocketFacade ws;
 
 
-    public ChessClient(String serverUrl) {
+    public ChessClient(String serverUrl) throws ServerResponseException {
         server = new ServerFacade(serverUrl);
+        ws = new WebSocketFacade(serverUrl, this);
     }
 
     public void run() {
@@ -288,6 +293,7 @@ public class ChessClient {
                     System.out.print("BLACK or WHITE: ");
                     String color = scanner.nextLine();
                     server.join(new JoinRequest(auth, color, gameIDs.get(gameNumber)));
+                    ws.playGame(auth);                                                    // ???
                     postJoinRepl(color.equals("WHITE"));
                 }
                 catch (ServerResponseException e) {
@@ -312,6 +318,7 @@ public class ChessClient {
                 System.out.println("Not a valid game number. Try listing the games first.");
             }
             else {
+                ws.observeGame(auth);
                 observeRepl(gameIDs.get(gameNumber));
             }
 
@@ -437,6 +444,11 @@ public class ChessClient {
                 }
             }
         }
+    }
+
+    public void notify(NotificationMessage notification) {
+        System.out.println(SET_TEXT_COLOR_MAGENTA + notification.getMessage() + RESET_TEXT_COLOR);
+
     }
 
 

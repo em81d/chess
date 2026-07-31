@@ -35,7 +35,7 @@ public class WebSocketFacade extends Endpoint {
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
-            throw new ServerResponseException(ServerResponseException.Code.ServerError, ex.getMessage());
+            throw new ServerResponseException(ex.getMessage());
         }
     }
 
@@ -49,7 +49,7 @@ public class WebSocketFacade extends Endpoint {
             var action = new Action(Action.Type.ENTER, visitorName);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
-            throw new ServerResponseException(ServerResponseException.Code.ServerError, ex.getMessage());
+            throw new ServerResponseException(ex.getMessage());
         }
     }
 
@@ -58,8 +58,17 @@ public class WebSocketFacade extends Endpoint {
             var action = new Action(Action.Type.EXIT, visitorName);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
-            throw new ServerResponseException(ServerResponseException.Code.ServerError, ex.getMessage());
+            throw new ServerResponseException(ex.getMessage());
         }
+    }
+
+    public void playGame(String authToken) {
+
+    }
+
+
+    public void observeGame(String authToken) {
+
     }
 
 }
