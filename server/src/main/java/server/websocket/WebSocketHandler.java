@@ -49,15 +49,15 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             String username = authDao.getAuth(auth).username();
 
             switch (cmd.getCommandType()) {
-                case CONNECT -> connect(session, username, (ConnectCommand) cmd);       //make the other three functions
-                case MAKE_MOVE -> move(session, username, (MakeMoveCommand) cmd);       //still need to deserialize the move
+                case CONNECT -> connect(gameId, session, username);       //make the other three functions
+                case MAKE_MOVE -> move(gameId, session, username, (MakeMoveCommand) cmd);       //still need to deserialize the move
                 //deserialize the whole cmd as a MakeMoveCommand instead of a UserGameCommand
-                case LEAVE -> leave(session, username, (LeaveGameCommand) cmd);
-                case RESIGN -> resign(session, username, (ResignCommand) cmd);
+                case LEAVE -> leave(gameId, session, username);
+                case RESIGN -> resign(gameId, session, username);
             }
         }
-        catch (NoAuthException ex) {
-            sendMessage(session, gameId, new ErrorMessage("Error: unauthorized"));  //will this ever get thrown?
+        catch (ServerResponseException ex) {
+            connections.sendToSession(gameId, session, new ErrorMessage("Error: unauthorized"));
         }
         catch (Exception ex) {
             ex.printStackTrace();
@@ -99,10 +99,30 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
 
     //chess methods
-    private void connect(int gameID, Session session, String username, ConnectCommand cmd) throws IOException {
+    private void connect(int gameID, Session session, String username) throws IOException {
         connections.add(gameID, session);
         var message = String.format("%s has joined the game.", username);
         var notification = new NotificationMessage(message);
-        connections.broadcast(session, notification);   //update
+        connections.broadcast(gameID, session, notification);
+        try {
+
+            connections.sendToSession(gameID, session, new LoadGameMessage(gameDao.getGame(gameID)));
+        }
+        catch (ServerResponseException e) {
+            connections.broadcast(gameID, null, new NotificationMessage("Error loading game associated with " + gameID));
+        }
+
+    }
+
+    private void move(int gameID, Session session, String username, MakeMoveCommand cmd) {
+
+    }
+
+    private void leave(int gameID, Session session, String username) {
+
+    }
+
+    private void resign(int gameID, Session session, String username) {
+
     }
 }

@@ -27,7 +27,7 @@ public class Server {
         gameDao = new GameDAOMemory();
         authDao = new AuthDAOMemory();
 
-        wsHandler = new WebSocketHandler();
+        wsHandler = new WebSocketHandler(authDao, gameDao);
 
 
         userService = new UserService(userDao, authDao);
