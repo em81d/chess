@@ -27,6 +27,10 @@ public class ConnectionManager {
         }
     }
 
+    public void removeAll(int gameID) {
+        connections.remove(gameID);
+    }
+
     public void broadcast(int gameID, Session excludeSession, ServerMessage notification) throws IOException {
         String msg = new Gson().toJson(notification);
         ArrayList<Session> sessions = connections.get(gameID);
@@ -44,5 +48,13 @@ public class ConnectionManager {
         if (session.isOpen()) {
             session.getRemote().sendString(msg);
         }
+    }
+
+    /**
+     *
+     * check if any sessions are currently in progress for a game. if not, a user has resigned or the game is over.
+    * */
+    public boolean checkInPlay(int gameID) {
+        return connections.containsKey(gameID);
     }
 }

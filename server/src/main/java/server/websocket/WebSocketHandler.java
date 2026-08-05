@@ -17,6 +17,7 @@ import io.javalin.websocket.WsMessageHandler;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.jetbrains.annotations.NotNull;
+import server.Server;
 import websocket.commands.*;
 import websocket.messages.*;
 
@@ -119,9 +120,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 throw new ServerResponseException("Observer cannot move!!");
             }
 
-            if (gameData == null || gameData.game() == null) {
+            if (gameData.game() == null) {
                 throw new ServerResponseException("Error: chess game has not been created");
             }
+            if (!connections.checkInPlay(gameID)) {
+                throw new ServerResponseException("Game is over.");
+            }
+
             MakeMoveCommand move = new Gson().fromJson(cmd, MakeMoveCommand.class);
             ChessGame game = gameData.game();
             try {
@@ -136,6 +141,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 if (game.isInCheckmate(other_team)) {
                     connections.broadcast(gameID, null, new NotificationMessage(other_team + " is in check" +
                             "mate! " + team + " won."));
+                    connections.removeAll(gameID);
                 }
             }
             catch (InvalidMoveException e) {
@@ -166,7 +172,24 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void resign(int gameID, Session session, String username) {
+    private void resign(int gameID, Session session, String username) throws IOException{
+        try {
+            GameData game = gameDao.getGame(gameID);
+            if ( !(username.equals(game.blackUsername()) || username.equals(game.whiteUsername()))) {
+                throw new ServerResponseException("Only players can resign.");
+            }
+            if (!connections.checkInPlay(gameID)) {
+                throw new ServerResponseException("Game is already over!");
+            }
+
+            connections.broadcast(gameID, session, new NotificationMessage(username + " has resigned!"));
+            connections.sendToSession(gameID, session, new NotificationMessage("You have resigned."));
+            connections.removeAll(gameID);
+        }
+        catch (ServerResponseException e) {
+            connections.sendToSession(gameID, session, new ErrorMessage("Error: " + e.getMessage()));
+        }
+
 
     }
 }
