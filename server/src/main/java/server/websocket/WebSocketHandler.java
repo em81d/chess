@@ -12,6 +12,7 @@ import io.javalin.websocket.WsConnectContext;
 import io.javalin.websocket.WsConnectHandler;
 import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.jetbrains.annotations.NotNull;
 import websocket.commands.*;
@@ -101,16 +102,20 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     //chess methods
     private void connect(int gameID, Session session, String username) throws IOException {
         connections.add(gameID, session);
-        var message = String.format("%s has joined the game.", username);
-        var notification = new NotificationMessage(message);
-        connections.broadcast(gameID, session, notification);
         try {
-
+            if (gameDao.getGame(gameID) == null) {
+                throw new ServerResponseException("Error: invalid game id");
+            }
+            var message = String.format("%s has joined the game.", username);
+            var notification = new NotificationMessage(message);
+            connections.broadcast(gameID, session, notification);
             connections.sendToSession(gameID, session, new LoadGameMessage(gameDao.getGame(gameID)));
+
         }
         catch (ServerResponseException e) {
-            connections.broadcast(gameID, null, new NotificationMessage("Error loading game associated with " + gameID));
+            connections.sendToSession(gameID, session, new ErrorMessage("Error loading game associated with " + gameID));
         }
+
 
     }
 

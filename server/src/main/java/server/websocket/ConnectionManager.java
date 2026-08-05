@@ -27,8 +27,8 @@ public class ConnectionManager {
         }
     }
 
-    public void broadcast(int gameID, Session excludeSession, NotificationMessage notification) throws IOException {
-        String msg = notification.getMessage();
+    public void broadcast(int gameID, Session excludeSession, ServerMessage notification) throws IOException {
+        String msg = new Gson().toJson(notification);
         ArrayList<Session> sessions = connections.get(gameID);
         for (Session s : sessions) {
             if (s.isOpen()) {
