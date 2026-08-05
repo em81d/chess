@@ -41,11 +41,8 @@ public class ConnectionManager {
 
     public void sendToSession(int gameID, Session session, ServerMessage message) throws IOException {
         String msg = new Gson().toJson(message);
-        ArrayList<Session> sessions = connections.get(gameID);
-        for (Session s : sessions) {
-            if (s.isOpen() && s.equals(session)) {
-                s.getRemote().sendString(msg);
-            }
+        if (session.isOpen()) {
+            session.getRemote().sendString(msg);
         }
     }
 }

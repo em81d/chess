@@ -47,6 +47,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             UserGameCommand cmd = new Gson().fromJson(ctx.message(), UserGameCommand.class);
             gameId = cmd.getGameID();
             String auth = cmd.getAuthToken();
+            if (authDao.getAuth(auth) == null) {
+                throw new NoAuthException("Error: unauthorized");
+            }
+
             String username = authDao.getAuth(auth).username();
 
             switch (cmd.getCommandType()) {
@@ -57,8 +61,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 case RESIGN -> resign(gameId, session, username);
             }
         }
-        catch (ServerResponseException ex) {
+        catch (NoAuthException ex) {
             connections.sendToSession(gameId, session, new ErrorMessage("Error: unauthorized"));
+        }
+        catch (ServerResponseException e) {
+            connections.sendToSession(gameId, session, new ErrorMessage("Error: other server error"));
         }
         catch (Exception ex) {
             ex.printStackTrace();
