@@ -2,6 +2,10 @@ package client.websocket;
 
 import com.google.gson.Gson;
 import exceptions.ServerResponseException;
+import websocket.commands.ConnectCommand;
+import websocket.commands.LeaveGameCommand;
+import websocket.commands.MakeMoveCommand;
+import websocket.commands.ResignCommand;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
@@ -44,31 +48,46 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
-    public void enterPetShop(String visitorName) throws ServerResponseException {
+
+
+    public void connect(String authToken, int gameID) throws ServerResponseException {
         try {
-            var action = new Action(Action.Type.ENTER, visitorName);
-            this.session.getBasicRemote().sendText(new Gson().toJson(action));
-        } catch (IOException ex) {
-            throw new ServerResponseException(ex.getMessage());
+            ConnectCommand conn = new ConnectCommand(authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(conn));
+        }
+        catch (IOException e) {
+            throw new ServerResponseException("Error: " + e.getMessage());
         }
     }
 
-    public void leavePetShop(String visitorName) throws ServerResponseException {
+    public void leave(String authToken, int gameID) throws ServerResponseException {
         try {
-            var action = new Action(Action.Type.EXIT, visitorName);
-            this.session.getBasicRemote().sendText(new Gson().toJson(action));
-        } catch (IOException ex) {
-            throw new ServerResponseException(ex.getMessage());
+            LeaveGameCommand leave = new LeaveGameCommand(authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(leave));
+        }
+        catch (IOException e) {
+            throw new ServerResponseException("Error: " + e.getMessage());
         }
     }
 
-    public void playGame(String authToken) {
-
+    public void resign(String auth, int gameId) throws ServerResponseException {
+        try {
+            ResignCommand resign = new ResignCommand(auth, gameId);
+            this.session.getBasicRemote().sendText(new Gson().toJson(resign));
+        }
+        catch (IOException e) {
+            throw new ServerResponseException("Error: " + e.getMessage());
+        }
     }
 
-
-    public void observeGame(String authToken) {
-
+    public void move(String auth, int gameID, String moveFrom, String moveTo) throws ServerResponseException{
+        try {
+            MakeMoveCommand move = new MakeMoveCommand(auth, gameID, chessmove);
+            this.session.getBasicRemote().sendText(new Gson().toJson(move));
+        }
+        catch (IOException e) {
+            throw new ServerResponseException("Error: " + e.getMessage());
+        }
     }
 
 }

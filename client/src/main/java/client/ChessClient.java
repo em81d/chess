@@ -454,7 +454,13 @@ public class ChessClient implements NotificationHandler {
         switch (message.getServerMessageType()) {
             case NOTIFICATION -> System.out.println(SET_TEXT_COLOR_MAGENTA + ((NotificationMessage) message).getMessage() + RESET_TEXT_COLOR);
             case ERROR -> System.out.println(SET_TEXT_COLOR_RED + ((ErrorMessage) message).getErrorMessage() + RESET_TEXT_COLOR);
-            case LOAD_GAME -> System.out.println(SET_TEXT_COLOR_GREEN + ((LoadGameMessage) message).getText() + RESET_TEXT_COLOR);
+            case LOAD_GAME -> {
+                System.out.println(SET_TEXT_COLOR_GREEN + "Game updated." + RESET_TEXT_COLOR);
+                GameData game = ((LoadGameMessage) message).getGame();
+                //how to tell if this client is player/observer, black/white?
+                drawBoard(true, game.game());
+
+            }
         }
 
 
