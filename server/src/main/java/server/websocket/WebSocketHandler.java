@@ -2,6 +2,8 @@ package server.websocket;
 
 import com.google.gson.Gson;
 import com.mysql.cj.protocol.a.BooleanValueEncoder;
+import dataaccess.AuthDAO;
+import dataaccess.GameDAO;
 import exceptions.NoAuthException;
 import exceptions.ServerResponseException;
 import io.javalin.websocket.WsCloseContext;
@@ -20,7 +22,15 @@ import java.io.IOException;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
 
-    private final ConnectionManager connections = new ConnectionManager();
+    private final ConnectionManager connections;
+    private final AuthDAO authDao;
+    private final GameDAO gameDao;
+
+    public WebSocketHandler(AuthDAO auth, GameDAO game) {
+        connections = new ConnectionManager();
+        authDao = auth;
+        gameDao = game;
+    }
 
     @Override
     public void handleConnect(WsConnectContext ctx) {
@@ -35,8 +45,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         try {
             UserGameCommand cmd = new Gson().fromJson(ctx.message(), UserGameCommand.class);
             gameId = cmd.getGameID();
-            String username = getUsername(cmd.getAuthToken());          //how???
-            saveSession(gameId, session);       //adding to connection manager
+            String auth = cmd.getAuthToken();
+            String username = authDao.getAuth(auth).username();
 
             switch (cmd.getCommandType()) {
                 case CONNECT -> connect(session, username, (ConnectCommand) cmd);       //make the other three functions
@@ -49,7 +59,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         catch (NoAuthException ex) {
             sendMessage(session, gameId, new ErrorMessage("Error: unauthorized"));  //will this ever get thrown?
         }
-        catch (IOException ex) {
+        catch (Exception ex) {
             ex.printStackTrace();
         }
     }
@@ -89,8 +99,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
 
     //chess methods
-    private void connect(Session session, String username, ConnectCommand cmd) throws IOException {
-        connections.add(session);       //update bc data structure changed
+    private void connect(int gameID, Session session, String username, ConnectCommand cmd) throws IOException {
+        connections.add(gameID, session);
         var message = String.format("%s has joined the game.", username);
         var notification = new NotificationMessage(message);
         connections.broadcast(session, notification);   //update
