@@ -296,7 +296,7 @@ public class ChessClient implements NotificationHandler {
                     System.out.print("BLACK or WHITE: ");
                     String color = scanner.nextLine();
                     server.join(new JoinRequest(auth, color, gameIDs.get(gameNumber)));
-                    ws.playGame(auth);                                                    // ???
+                    ws.connect(auth, gameIDs.get(gameNumber));                                                    // ???
                     postJoinRepl(color.equals("WHITE"));
                 }
                 catch (ServerResponseException e) {
@@ -321,7 +321,7 @@ public class ChessClient implements NotificationHandler {
                 System.out.println("Not a valid game number. Try listing the games first.");
             }
             else {
-                ws.observeGame(auth);
+                ws.connect(auth, gameIDs.get(gameNumber));
                 observeRepl(gameIDs.get(gameNumber));
             }
 
@@ -333,6 +333,7 @@ public class ChessClient implements NotificationHandler {
 
     public void postJoinRepl(boolean isWhite) {
         drawBoard(isWhite, new ChessGame());
+
     }
 
     public void observeRepl(int gameNumber) {

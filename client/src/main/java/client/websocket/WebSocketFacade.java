@@ -1,5 +1,9 @@
 package client.websocket;
 
+import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPiece;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import exceptions.ServerResponseException;
 import websocket.commands.ConnectCommand;
@@ -14,6 +18,9 @@ import jakarta.websocket.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Locale;
+
+import static chess.ChessPiece.PieceType.*;
 
 //need to extend Endpoint for websocket to work properly
 public class WebSocketFacade extends Endpoint {
@@ -80,14 +87,56 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void move(String auth, int gameID, String moveFrom, String moveTo) throws ServerResponseException{
+    public void move(String auth, int gameID, String moveFrom, String moveTo, String promotion) throws ServerResponseException{
         try {
+
+            ChessMove chessmove = new ChessMove(toPosition(moveFrom), toPosition(moveTo), toPromotion(promotion));
+
             MakeMoveCommand move = new MakeMoveCommand(auth, gameID, chessmove);
             this.session.getBasicRemote().sendText(new Gson().toJson(move));
         }
         catch (IOException e) {
             throw new ServerResponseException("Error: " + e.getMessage());
         }
+    }
+
+    public ChessPiece.PieceType toPromotion(String promotionString){
+        if (promotionString == null) {
+            return null;
+        }
+        if (promotionString.equalsIgnoreCase("bishop")) {
+            return BISHOP;
+        }
+        if (promotionString.equalsIgnoreCase("queen")) {
+            return QUEEN;
+        }
+        if (promotionString.equalsIgnoreCase("knight")) {
+            return KNIGHT;
+        }
+        if (promotionString.equalsIgnoreCase("rook")) {
+            return ROOK;
+        }
+        return null;
+    }
+
+    public ChessPosition toPosition(String posString) {
+        int i;
+        int j;
+
+        switch (posString.charAt(0)) {
+            case 'a' -> i = 1;
+            case 'b' -> i = 2;
+            case 'c' -> i = 3;
+            case 'd' -> i = 4;
+            case 'e' -> i = 5;
+            case 'f' -> i = 6;
+            case 'g' -> i = 7;
+            case 'h' -> i = 8;
+            default -> i = -1;
+        }
+        j = Character.getNumericValue(posString.charAt(1));
+
+        return new ChessPosition(i,j);
     }
 
 }
