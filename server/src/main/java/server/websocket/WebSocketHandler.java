@@ -111,9 +111,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 team = BLACK;
                 other_team = WHITE;
             }
-            else {
+            else if (gameData.whiteUsername().equals(username)){
                 team = WHITE;
                 other_team = BLACK;
+            }
+            else {
+                throw new ServerResponseException("Observer cannot move!!");
             }
 
             if (gameData == null || gameData.game() == null) {
@@ -141,12 +144,26 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
         }
         catch (ServerResponseException e) {
-            connections.sendToSession(gameID, session, new ErrorMessage("Error making move."));
+            connections.sendToSession(gameID, session, new ErrorMessage("Error making move." + e.getMessage()));
         }
     }
 
-    private void leave(int gameID, Session session, String username) {
+    private void leave(int gameID, Session session, String username) throws IOException {
+        try {
+            GameData gameData = gameDao.getGame(gameID);
+            if (gameData.whiteUsername() != null && gameData.whiteUsername().equals(username)) {
+                gameDao.updateGame(gameData, "WHITE", null);
+            }
+            else if (gameData.blackUsername() != null && gameData.blackUsername().equals(username)) {
+                gameDao.updateGame(gameData, "BLACK", null);
+            }
+            connections.broadcast(gameID, session, new NotificationMessage(username + " has left the game."));
 
+            connections.remove(gameID, session);
+        }
+        catch (ServerResponseException e) {
+            connections.sendToSession(gameID, session, new ErrorMessage("Error leaving game. " + e.getMessage()));
+        }
     }
 
     private void resign(int gameID, Session session, String username) {
