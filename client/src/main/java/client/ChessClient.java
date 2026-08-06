@@ -317,7 +317,6 @@ public class ChessClient implements NotificationHandler {
                     }
                     case "-r" -> {
                         resign(auth, gameID);
-                        playing = false;
                     }
                     case "-s" -> highlight(auth, gameID, isWhite);
                 }
@@ -346,7 +345,7 @@ public class ChessClient implements NotificationHandler {
             String pos1 = input.nextLine();
             System.out.print("Position you are moving to: ");
             String pos2 = input.nextLine();
-            System.out.println("Do you need to promote a pawn with this move? ");
+            System.out.print("Do you need to promote a pawn with this move? ");
             String promotionQuestion = input.nextLine();
             String promotion = null;
             if (promotionQuestion.contains("y")) {
@@ -392,8 +391,7 @@ public class ChessClient implements NotificationHandler {
             String pos = input.nextLine();
             ChessPosition p = ws.toPosition(pos);
 
-            ChessPiece piece = game.game().getBoard().getPiece(p);
-            Collection<ChessMove> moves = piece.pieceMoves(game.game().getBoard(), p);
+            Collection<ChessMove> moves = game.game().validMoves(p);
             Collection<ChessPosition> positions = new ArrayList<>();
 
             for (ChessMove move : moves) {
