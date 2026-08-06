@@ -158,7 +158,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 }
             } catch (InvalidMoveException e) {
 //                connections.sendToSession(gameID, session, new NotificationMessage("here1"));
-                connections.sendToSession(gameID, session, new ErrorMessage("Invalid move. " + e.getMessage()));
+                connections.sendToSession(gameID, session, new ErrorMessage("Error: " + e.getMessage()));
 //                connections.sendToSession(gameID, session, new NotificationMessage("here2"));
             }
 

@@ -4,20 +4,20 @@ import static websocket.messages.ServerMessage.ServerMessageType.ERROR;
 
 public class ErrorMessage extends ServerMessage {
 
-    private final String message;
+    private final String errorMessage;
 
-    public ErrorMessage(String message) {
+    public ErrorMessage(String errorMessage) {
         super(ERROR);
-        this.message = message;
+        this.errorMessage = errorMessage;
     }
 
 
     public String getErrorMessage() {
-        return message;
+        return errorMessage;
     }
 
     @Override
     public String toString() {
-        return message;
+        return errorMessage;
     }
 }

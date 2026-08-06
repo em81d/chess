@@ -356,7 +356,7 @@ public class ChessClient implements NotificationHandler {
                 throw new ServerResponseException("Game id not found.");
             }
 
-            drawBoard(isWhite, game.game());
+//            drawBoard(isWhite, game.game());
             Scanner scanner = new Scanner(System.in);
             boolean playing = true;
             String input = "";
@@ -368,8 +368,8 @@ public class ChessClient implements NotificationHandler {
                 input = scanner.nextLine();
 
                 switch (input) {
-                    case "-h" -> inGameHelp(isWhite, game.game());
-                    case "-d" -> drawBoard(isWhite, game.game());
+                    case "-h" -> inGameHelp(isWhite, gameID, auth);
+                    case "-d" -> drawGame(isWhite, gameID, auth);
                     case "-l" -> {
                         leaveGame();
                         playing = false;
@@ -396,22 +396,37 @@ public class ChessClient implements NotificationHandler {
 
     }
 
-    public void inGameHelp(boolean white, ChessGame game) {
-        if (white) {
-            System.out.println("\n\nYou are currently playing as white. ");
+    public void inGameHelp(boolean white, int gameID, String auth) {
+        try {
+            GameData game = null;
+            for (GameData g : server.listGames(new ListRequest(auth)).games()) {
+                if (g.gameID() == gameID) {
+                    game = g;
+                }
+            }
+            if (game == null) {
+                throw new ServerResponseException("Game id not found.");
+            }
+
+            if (white) {
+                System.out.println("\n\nYou are currently playing as white. ");
+            } else {
+                System.out.println("\n\nYou are currently playing as black. ");
+            }
+            if ((game.game().getTeamTurn() == WHITE) == white) {
+                System.out.println("It's your turn! Use -m to make a move or -s to show all legal moves. ");
+            } else {
+                System.out.println("It's not your turn yet. While you wait, you can use -s to show your possible moves. Once " +
+                        "it's your turn, you can use -m to make a move. ");
+            }
+            System.out.println("You can also use -l to leave the game, -r to resign and admit defeat, or -d to redraw the board " +
+                    "if the screen is getting too cluttered. \n\n\t\t\t\t\t*\t*\t*\t\t\t\n");
         }
-        else {
-            System.out.println("\n\nYou are currently playing as black. ");
+        catch (ServerResponseException e) {
+            System.out.println("Error getting current game state. use -s to show your possible moves. Once it's your turn, you can use" +
+                    " -m to make a move. You can also use -l to leave the game, -r to resign and admit defeat, or -d to redraw the board." +
+                    "\n\n\t\t\t\t\t*\t*\t*\t\t\t\n");
         }
-        if ((game.getTeamTurn()==WHITE) == white) {
-            System.out.println("It's your turn! Use -m to make a move or -s to show all legal moves. ");
-        }
-        else {
-            System.out.println("It's not your turn yet. While you wait, you can use -s to show your possible moves. Once " +
-                    "it's your turn, you can use -m to make a move. ");
-        }
-        System.out.println("You can also use -l to leave the game, -r to resign and admit defeat, or -d to redraw the board " +
-                "if the screen is getting too cluttered. \n\n\t\t\t\t\t*\t*\t*\t\t\t\n");
     }
 
     public void makeMove(String auth, int id) {
@@ -430,6 +445,25 @@ public class ChessClient implements NotificationHandler {
             System.out.println(SET_TEXT_COLOR_RED + "\nInvalid move. " + RESET_TEXT_COLOR);
         }
 
+    }
+
+    public void drawGame(boolean isWhite, int gameID, String auth) {
+        try {
+            GameData game = null;
+            for (GameData g : server.listGames(new ListRequest(auth)).games()) {
+                if (g.gameID() == gameID) {
+                    game = g;
+                }
+            }
+            if (game == null) {
+                throw new ServerResponseException("Game id not found.");
+            }
+
+            drawBoard(isWhite, game.game());
+        }
+        catch (ServerResponseException e) {
+            System.out.println(SET_TEXT_COLOR_RED + "Error getting current game state." + RESET_TEXT_COLOR);
+        }
     }
 
     public void highlight() {
