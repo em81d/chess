@@ -435,12 +435,26 @@ public class ChessClient implements NotificationHandler {
             String pos1 = input.nextLine();
             System.out.print("Position you are moving to: ");
             String pos2 = input.nextLine();
+            System.out.println("Do you need to promote a pawn with this move? ");
+            String promotionQuestion = input.nextLine();
+            String promotion = null;
+            if (promotionQuestion.contains("y")) {
+                System.out.print("QUEEN, BISHOP, KNIGHT, or ROOK: ");
+                String promotionAnswer = input.nextLine();
+                switch (promotionAnswer) {
+                    case "QUEEN" -> promotion = "QUEEN";
+                    case "BISHOP" -> promotion = "BISHOP";
+                    case "KNIGHT" -> promotion = "KNIGHT";
+                    case "ROOK" -> promotion = "ROOK";
+                }
+            }
 
             try {
-                ws.move(auth, id, pos1, pos2, null);
+                ws.move(auth, id, pos1, pos2, promotion);
             } catch (ServerResponseException e) {
                 System.out.println(SET_TEXT_COLOR_RED + "\nInvalid move. " + RESET_TEXT_COLOR);
             }
+
         }
         catch (Exception e) {
             System.out.println(SET_TEXT_COLOR_RED + "\nInvalid command. " + RESET_TEXT_COLOR);
