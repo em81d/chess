@@ -133,18 +133,18 @@ public class WebSocketFacade extends Endpoint {
         int i;
         int j;
 
-        switch (posString.charAt(1)) {
-            case 'a' -> j = 1;
-            case 'b' -> j = 2;
-            case 'c' -> j = 3;
-            case 'd' -> j = 4;
-            case 'e' -> j = 5;
-            case 'f' -> j = 6;
-            case 'g' -> j = 7;
-            case 'h' -> j = 8;
+        switch (posString.substring(0,1)) {
+            case "a" -> j = 1;
+            case "b" -> j = 2;
+            case "c" -> j = 3;
+            case "d" -> j = 4;
+            case "e" -> j = 5;
+            case "f" -> j = 6;
+            case "g" -> j = 7;
+            case "h" -> j = 8;
             default -> j = -1;
         }
-        i = Character.getNumericValue(posString.charAt(0));
+        i = Character.getNumericValue(posString.charAt(1));
 
         return new ChessPosition(i,j);
     }

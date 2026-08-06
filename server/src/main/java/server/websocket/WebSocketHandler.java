@@ -142,7 +142,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 //            connections.sendToSession(gameID, session, new NotificationMessage("in move 4"));
             try {
                 if (!game.teamValidMoves(team).contains(move.getMove())) {
-                    throw new InvalidMoveException("Cannot move other player's piece.");
+                    throw new InvalidMoveException("Cannot move other player's piece. " + move.getMove());
                 }
 //                connections.sendToSession(gameID, session, new NotificationMessage("in move 5"));
                 game.makeMove(move.getMove());
