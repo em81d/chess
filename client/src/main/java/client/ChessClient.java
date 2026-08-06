@@ -505,15 +505,18 @@ public class ChessClient implements NotificationHandler {
     public void resign(String auth, int gameID) {
 
         try {
-            ws.resign(auth, gameID);
-            System.out.println("Thanks for playing! Better luck next time.");
+            Scanner in = new Scanner(System.in);
+            System.out.print(SET_TEXT_COLOR_BLUE + "Are you sure you want to resign? " + RESET_TEXT_COLOR);
+            String result = in.nextLine();
+            if (result.equalsIgnoreCase("y") || result.equalsIgnoreCase("yes")) {
+                ws.resign(auth, gameID);
+                System.out.println("Thanks for playing! Better luck next time.");
+            }
         }
         catch (ServerResponseException e) {
             System.out.println(SET_TEXT_COLOR_RED + "Unable to connect to server to resign." + RESET_TEXT_COLOR);
         }
 
-
-        //resign stuff
     }
 
     public void leaveGame(String auth, int gameID) {
