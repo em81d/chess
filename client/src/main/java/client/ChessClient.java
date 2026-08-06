@@ -368,14 +368,14 @@ public class ChessClient implements NotificationHandler {
                     case "-h" -> inGameHelp(isWhite, gameID, auth);
                     case "-d" -> drawGame(isWhite, gameID, auth);
                     case "-l" -> {
-                        leaveGame();
+                        leaveGame(auth, gameID);
                         playing = false;
                     }
                     case "-m" -> {
                         makeMove(auth, gameID);
                     }
                     case "-r" -> {
-                        resign();
+                        resign(auth, gameID);
                         playing = false;
                     }
                     case "-s" -> highlight(auth, gameID, isWhite);
@@ -501,14 +501,29 @@ public class ChessClient implements NotificationHandler {
         }
     }
 
-    public void resign() {
-        System.out.println("Thanks for playing! Better luck next time.");
+    public void resign(String auth, int gameID) {
+
+        try {
+            ws.resign(auth, gameID);
+            System.out.println("Thanks for playing! Better luck next time.");
+        }
+        catch (ServerResponseException e) {
+            System.out.println(SET_TEXT_COLOR_RED + "Unable to connect to server to resign." + RESET_TEXT_COLOR);
+        }
+
 
         //resign stuff
     }
 
-    public void leaveGame() {
+    public void leaveGame(String auth, int gameID) {
         System.out.println("You left the game. Come back and play soon!");
+        try {
+            ws.leave(auth, gameID);
+            System.out.println("Thanks for playing! Come play again soon!");
+        }
+        catch (ServerResponseException e) {
+            System.out.println(SET_TEXT_COLOR_RED + "Unable to connect to server to leave." + RESET_TEXT_COLOR);
+        }
     }
 
     public void observeRepl(int gameNumber, String username) {
