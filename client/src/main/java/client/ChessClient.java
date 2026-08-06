@@ -12,10 +12,7 @@ import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 import static chess.ChessGame.TeamColor.*;
 import static ui.EscapeSequences.*;
@@ -381,7 +378,7 @@ public class ChessClient implements NotificationHandler {
                         resign();
                         playing = false;
                     }
-                    case "-s" -> highlight();
+                    case "-s" -> highlight(auth, gameID, isWhite);
                 }
 
 
@@ -459,15 +456,49 @@ public class ChessClient implements NotificationHandler {
                 throw new ServerResponseException("Game id not found.");
             }
 
-            drawBoard(isWhite, game.game());
+            drawBoard(isWhite, game.game(), new ArrayList<>());
         }
         catch (ServerResponseException e) {
             System.out.println(SET_TEXT_COLOR_RED + "Error getting current game state." + RESET_TEXT_COLOR);
         }
     }
 
-    public void highlight() {
+    public void highlight(String auth, int gameID, boolean isWhite) {
+        try {
+            GameData game = null;
+            for (GameData g : server.listGames(new ListRequest(auth)).games()) {
+                if (g.gameID() == gameID) {
+                    game = g;
+                }
+            }
+            if (game == null) {
+                throw new ServerResponseException("Game id not found.");
+            }
 
+            Scanner input = new Scanner(System.in);
+            System.out.println("\nPositions should be a lowercase letter designating the column, followed immediately by a single" +
+                    " digit designating the row.\n");
+            System.out.print("Position of the piece whose moves you want to highlight: ");
+            String pos = input.nextLine();
+            ChessPosition p = ws.toPosition(pos);
+
+            ChessPiece piece = game.game().getBoard().getPiece(p);
+            Collection<ChessMove> moves = piece.pieceMoves(game.game().getBoard(), p);
+            Collection<ChessPosition> moveToPositions = new ArrayList<>();
+
+            for (ChessMove move : moves) {
+                moveToPositions.add(move.getEndPosition());
+            }
+
+            drawBoard(isWhite, game.game(), moveToPositions);
+
+        }
+        catch (ServerResponseException e) {
+            System.out.println(SET_TEXT_COLOR_RED + "Error getting current game state." + RESET_TEXT_COLOR);
+        }
+        catch (Exception e) {
+            System.out.println(SET_TEXT_COLOR_RED + "Invalid command." + RESET_TEXT_COLOR);
+        }
     }
 
     public void resign() {
@@ -481,11 +512,11 @@ public class ChessClient implements NotificationHandler {
     }
 
     public void observeRepl(int gameNumber, String username) {
-        drawBoard(true, new ChessGame());
+        drawBoard(true, new ChessGame(), new ArrayList<>());
     }
 
 
-    public void drawBoard(boolean isWhite, ChessGame game) {
+    public void drawBoard(boolean isWhite, ChessGame game, Collection<ChessPosition> highlighted) {
         ChessBoard board = game.getBoard();
         System.out.print("\u001b[49;38;2;127;161;124;1m");
 //        System.out.print("\u001b[35;105;1m 1 ");
@@ -498,7 +529,8 @@ public class ChessClient implements NotificationHandler {
             for (int i=8; i>0; i--) {
                 System.out.print("\u001b[49;38;2;127;161;124;1m " + i + " \u001b[30m");
                 for (int j=1; j<9; j++) {
-                    printSquare(i,j,board);
+                    pos = new ChessPosition(i,j);
+                    printSquare(i,j,board,highlighted.contains(pos));
                 }
                 System.out.print("\u001b[49;38;2;127;161;124;1m " + i + "  \u001b[49m\n");
             }
@@ -512,7 +544,8 @@ public class ChessClient implements NotificationHandler {
             for (int i=1; i<9; i++) {
                 System.out.print("\u001b[49;38;2;127;161;124;1m " + i + " \u001b[30m");
                 for (int j=8; j>0; j--) {
-                    printSquare(i,j,board);
+                    pos = new ChessPosition(i,j);
+                    printSquare(i,j,board,highlighted.contains(pos));
                 }
                 System.out.print("\u001b[49;38;2;127;161;124;1m " + i + "  \u001b[49m\n");
             }
@@ -523,15 +556,26 @@ public class ChessClient implements NotificationHandler {
 
     }
 
-    public void printSquare(int i, int j, ChessBoard board)  {
+    public void printSquare(int i, int j, ChessBoard board, boolean highlighted)  {
         ChessPosition pos = new ChessPosition(i,j);
         if (i % 2 != j % 2) {
             //white square
-            System.out.print("\u001b[48;2;214;191;206m");
+            if (highlighted) {
+                System.out.print("\u001b[48;2;254;255;199m");
+            }
+            else {
+                System.out.print("\u001b[48;2;214;191;206m");
+            }
         }
         else {
             //black square
-            System.out.print("\u001b[48;2;128;102;119m");
+            if (highlighted) {
+                System.out.print("\u001b[48;2;195;198;108m");
+
+            } else {
+                System.out.print("\u001b[48;2;128;102;119m");
+
+            }
         }
         if (board.getPiece(pos) == null) {
             System.out.print(EMPTY);
@@ -608,7 +652,7 @@ public class ChessClient implements NotificationHandler {
                 System.out.println(SET_TEXT_COLOR_GREEN + "Game updated." + RESET_TEXT_COLOR);
                 GameData game = ((LoadGameMessage) message).getGame();
                 //how to tell if this client is player/observer, black/white?
-                drawBoard(current_color == WHITE, game.game());
+                drawBoard(current_color == WHITE, game.game(), new ArrayList<>());
 
             }
         }
