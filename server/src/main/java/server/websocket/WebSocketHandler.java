@@ -151,7 +151,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 }
                 game.makeMove(move.getMove());
                 GameData newGame = new GameData(gameID, gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), game);
+                gameDao.updateGame(gameID, game);
+
                 connections.broadcast(gameID, null, new LoadGameMessage(newGame));
+
 
 
                 connections.broadcast(gameID, session, new NotificationMessage(username + " made a move " + move.getMoveString()));

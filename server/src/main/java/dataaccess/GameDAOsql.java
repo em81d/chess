@@ -68,12 +68,17 @@ public class GameDAOsql extends SqlDAO implements GameDAO {
             try (var preparedStatement2 = conn.prepareStatement("SELECT whiteusername, blackusername, name FROM game WHERE id=?")) {
                 preparedStatement2.setInt(1, gameID);
                 try (var stmt = preparedStatement2.executeQuery()) {
-                    gameName = stmt.getString("name");
-                    whiteusername = stmt.getString("whiteusername");
-                    blackusername = stmt.getString("blackusername");
-                    ChessGame game = new Gson().fromJson(stmt.getString("json"), ChessGame.class);
 
-                    return new GameData(gameID, whiteusername, blackusername, gameName, game);
+                    if (stmt.next()){
+                        gameName = stmt.getString("name");
+                        whiteusername = stmt.getString("whiteusername");
+                        blackusername = stmt.getString("blackusername");
+
+                        return new GameData(gameID, whiteusername, blackusername, gameName, g);
+                    }
+                    else {
+                        return null;
+                    }
                 }
             }
         }
