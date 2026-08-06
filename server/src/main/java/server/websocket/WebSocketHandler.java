@@ -101,8 +101,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             if (gameDao.getGame(gameID).whiteUsername() != null && gameDao.getGame(gameID).whiteUsername().equals(username)) {
                 color = "white";
             }
-            else {
+            else if (gameDao.getGame(gameID).blackUsername() != null && gameDao.getGame(gameID).blackUsername().equals(username)){
                 color = "black";
+            }
+            else {
+                color = "observer";
             }
             var message = String.format("%s has joined the game as %s.", username, color);
             var notification = new NotificationMessage(message);
@@ -139,7 +142,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 throw new ServerResponseException("Error: chess game has not been created");
             }
             if (!connections.checkInPlay(gameID)) {
-                throw new ServerResponseException("Game is over.");
+                throw new ServerResponseException(" Game is over.");
             }
 
 //            connections.sendToSession(gameID, session, new NotificationMessage("in move 3"));
