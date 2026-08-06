@@ -19,31 +19,26 @@ import static ui.EscapeSequences.*;
 import static ui.EscapeSequences.BLACK_KING;
 import static ui.EscapeSequences.BLACK_PAWN;
 
-
 public class ChessClient implements NotificationHandler {
-
 
     private final ServerFacade server;
     private Map<Integer,Integer> gameIDs;
     private final WebSocketFacade ws;
+    private final BoardDrawer drawer;
 
-    private ChessGame.TeamColor current_color;
-    private boolean is_observer;
-
+    private ChessGame.TeamColor currentColor;
 
     public ChessClient(String serverUrl) throws ServerResponseException {
         server = new ServerFacade(serverUrl);
         ws = new WebSocketFacade(serverUrl, this);
-        current_color = null;
+        currentColor = null;
+        drawer = new BoardDrawer();
     }
 
     public void run() {
         System.out.println("Welcome to chess!");
-
         preLoginRepl();
-
     }
-
 
     public void preLoginRepl() {
         Scanner scanner = new Scanner(System.in);
@@ -51,38 +46,20 @@ public class ChessClient implements NotificationHandler {
 
         while (!result.equals("-q")) {
             System.out.println("-h for help \t|\t -q to quit \t|\t -l to login \t|\t -r to register ");
-
             try {
                 result = scanner.nextLine();
-
-                if (result.equals("-h")) {
-                    printPreloginHelp();
+                switch (result) {
+                    case "-h" -> drawer.printPreloginHelp();
+                    case "-l" -> loginUser(scanner);
+                    case "-r" -> registerUser(scanner);
                 }
-                else if (result.equals("-l")) {
-                    loginUser(scanner);
-                }
-                else if (result.equals("-r")) {
-                    registerUser(scanner);
-                }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 System.out.println("invalid input.");
-                System.out.println(e);
+                System.out.println(e.getMessage());
                 result = "-q";
-
             }
         }
-
         scanner.close();
-    }
-
-    public void printPreloginHelp() {
-        System.out.println("To use the chess application, start by logging in or creating an account!");
-        System.out.println("Type -l and hit enter to log in, or type -r and hit enter to create an account.");
-        System.out.println("Once you've entered a command, the terminal will walk you through the next steps.");
-        System.out.println("Then you will get to the next part of the application, where you will be able to play chess!");
-
-        System.out.println("\n\t\t\t\t\t\t*\t*\t*\t\t\t\n");
     }
 
     public void loginUser(Scanner scanner) {
@@ -90,15 +67,12 @@ public class ChessClient implements NotificationHandler {
         String username = scanner.nextLine();
         System.out.print("Password: ");
         String password = scanner.nextLine();
-
         try {
             String auth = server.login(new LoginRequest(username, password)).authToken();
-            postLoginRepl(auth, username);
-        }
-        catch (Exception e) {
+            postLoginRepl(auth);
+        } catch (Exception e) {
             System.out.println("Login failed. Incorrect username or password");
         }
-
     }
 
     public void registerUser(Scanner scanner) {
@@ -115,12 +89,10 @@ public class ChessClient implements NotificationHandler {
             username = scanner.nextLine();
             if (username.length() > 99) {
                 System.out.println("Username should be under 100 characters.");
-            }
-            else {
+            } else {
                 usernameCreated = true;
             }
         }
-
         while (!passwordCreated) {
             System.out.println("Create a password. Passwords should be at least 6 characters and include a variety of " +
                     "letters, numbers, and symbols.");
@@ -128,54 +100,45 @@ public class ChessClient implements NotificationHandler {
             password = scanner.nextLine();
             if (password.length() > 99) {
                 System.out.println("Password should be under 100 characters.");
-            }
-            else if (password.length() <7) {
+            } else if (password.length() <7) {
                 System.out.println("Password is too short.");
-            }
-            else {
+            } else {
                 passwordCreated = true;
             }
         }
-
         while (!emailCreated) {
             System.out.print("Enter your email: ");
             email = scanner.nextLine();
             if (email.length() > 99) {
                 System.out.println("Email should be under 100 characters.");
-            }
-            else if (!email.contains("@")) {
+            } else if (!email.contains("@")) {
                 System.out.println("Make sure your email is a valid email address.");
-            }
-            else {
+            } else {
                 emailCreated = true;
             }
         }
-
         try {
             String auth = server.register(new RegisterRequest(username, password, email)).authToken();
             System.out.println("\nLogin success!");
-            postLoginRepl(auth, username);
-        }
-        catch (DataAccessException e) {
+            postLoginRepl(auth);
+        } catch (DataAccessException e) {
             System.out.println("Username is already taken! Try a different one.\n"); //implement real error handling later
         }
-
     }
 
 
-    public void postLoginRepl(String auth, String username) {
+    public void postLoginRepl(String auth) {
         String result = "";
         Scanner scanner = new Scanner(System.in);
 
         while (!result.equals("-e")) {
             System.out.println("\n-h for help \t|\t -e to exit and logout \t|\t -c to create a game \t|\t -l to list existing " +
                     "games \t|\t -p to play a game \t|\t -o to observe a game ");
-
             try {
                 result = scanner.nextLine();
 
                 if (result.equals("-h")) {
-                    printPostloginHelp();
+                    drawer.printPostloginHelp();
                 }
                 else if (result.equals("-e")) {
                     logoutUser(auth);
@@ -187,10 +150,10 @@ public class ChessClient implements NotificationHandler {
                     listGames(auth);
                 }
                 else if (result.equals("-p")) {
-                    joinGame(auth, scanner, username);
+                    joinGame(auth, scanner);
                 }
                 else if (result.equals("-o")) {
-                    observeGame(auth, scanner, username);
+                    observeGame(auth, scanner);
                 }
                 else {
                     System.out.println("invalid input.");
@@ -201,17 +164,6 @@ public class ChessClient implements NotificationHandler {
                 result = "-e";
             }
         }
-
-//        scanner.close();
-    }
-
-    public void printPostloginHelp() {
-
-        System.out.println("\nWelcome to your account homepage! Start by hitting -l to see what games have already\n been created," +
-                " and then if you'd like you can join one to play with -p! When you join a game, you \nwill need the game id that " +
-                "is printed during the list dialog. If you aren't feeling ready to \njoin a game just yet, you can also pick a game id " +
-                "and join as an observer with -o. If there isn't \nalready a game you want to join, create one with -c. When you're " +
-                "all done playing, it's a simple -e \nto exit and log out. Happy chess playing!\n\t\t\t\t\t\t*****\t\t\t");
     }
 
     public void logoutUser(String auth) {
@@ -284,7 +236,7 @@ public class ChessClient implements NotificationHandler {
         }
     }
 
-    public void joinGame(String auth, Scanner scanner, String username) {
+    public void joinGame(String auth, Scanner scanner) {
         try {
             System.out.print("Which game would you like to join? Game number: ");
             int gameNumber = Integer.parseInt(scanner.nextLine());
@@ -301,13 +253,13 @@ public class ChessClient implements NotificationHandler {
                     ws.connect(auth, gameIDs.get(gameNumber));
 
                     if (color.equals("WHITE")) {
-                        current_color = WHITE;
+                        currentColor = WHITE;
                     }
                     else {
-                        current_color = BLACK;
+                        currentColor = BLACK;
                     }
 
-                    postJoinRepl(gameIDs.get(gameNumber), auth, color.equals("WHITE"), username);
+                    postJoinRepl(gameIDs.get(gameNumber), auth, color.equals("WHITE"));
                 }
                 catch (ServerResponseException e) {
                     System.out.println("Try again! It's possible that that game does not exist, that spot is taken," +
@@ -322,7 +274,7 @@ public class ChessClient implements NotificationHandler {
 
     }
 
-    public void observeGame(String auth, Scanner scanner, String username) {
+    public void observeGame(String auth, Scanner scanner) {
         try {
             System.out.println("Which game would you like to observe? Game number: ");
             int gameNumber = Integer.parseInt(scanner.nextLine());
@@ -332,7 +284,7 @@ public class ChessClient implements NotificationHandler {
             }
             else {
                 ws.connect(auth, gameIDs.get(gameNumber));
-                observeRepl(gameIDs.get(gameNumber), auth, username);
+                observeRepl(gameIDs.get(gameNumber), auth);
             }
 
         }
@@ -341,19 +293,8 @@ public class ChessClient implements NotificationHandler {
         }
     }
 
-    public void postJoinRepl(int gameID, String auth, boolean isWhite, String username) {
-        GameData game = null;
+    public void postJoinRepl(int gameID, String auth, boolean isWhite) {
         try {
-            for (GameData g : server.listGames(new ListRequest(auth)).games()) {
-                if (g.gameID() == gameID) {
-                    game = g;
-                }
-            }
-            if (game == null) {
-                throw new ServerResponseException("Game id not found.");
-            }
-
-//            drawBoard(isWhite, game.game());
             Scanner scanner = new Scanner(System.in);
             boolean playing = true;
             String input = "";
@@ -380,49 +321,19 @@ public class ChessClient implements NotificationHandler {
                     }
                     case "-s" -> highlight(auth, gameID, isWhite);
                 }
-
-
             }
-        }
-        catch (ServerResponseException e) {
-            System.out.println("unable to find game.");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("invalid command. ");
         }
-
     }
 
     public void inGameHelp(boolean white, int gameID, String auth) {
         try {
-            GameData game = null;
-            for (GameData g : server.listGames(new ListRequest(auth)).games()) {
-                if (g.gameID() == gameID) {
-                    game = g;
-                }
-            }
-            if (game == null) {
-                throw new ServerResponseException("Game id not found.");
-            }
-
-            if (white) {
-                System.out.println("\n\nYou are currently playing as white. ");
-            } else {
-                System.out.println("\n\nYou are currently playing as black. ");
-            }
-            if ((game.game().getTeamTurn() == WHITE) == white) {
-                System.out.println("It's your turn! Use -m to make a move or -s to show all legal moves. ");
-            } else {
-                System.out.println("It's not your turn yet. While you wait, you can use -s to show your possible moves. Once " +
-                        "it's your turn, you can use -m to make a move. ");
-            }
-            System.out.println("You can also use -l to leave the game, -r to resign and admit defeat, or -d to redraw the board " +
-                    "if the screen is getting too cluttered. \n\n\t\t\t\t\t*\t*\t*\t\t\t\n");
+            GameData game = getUpdatedGame(auth, gameID);
+            drawer.inGameHelp(white, (game.game().getTeamTurn() == WHITE) == white); //third parameter is true if your turn
         }
         catch (ServerResponseException e) {
-            System.out.println("Error getting current game state. use -s to show your possible moves. Once it's your turn, you can use" +
-                    " -m to make a move. You can also use -l to leave the game, -r to resign and admit defeat, or -d to redraw the board." +
-                    "\n\n\t\t\t\t\t*\t*\t*\t\t\t\n");
+            System.out.println("Error getting current game state. See commands below.");
         }
     }
 
@@ -448,7 +359,6 @@ public class ChessClient implements NotificationHandler {
                     case "ROOK" -> promotion = "ROOK";
                 }
             }
-
             try {
                 ws.move(auth, id, pos1, pos2, promotion);
             } catch (ServerResponseException e) {
@@ -464,34 +374,16 @@ public class ChessClient implements NotificationHandler {
 
     public void drawGame(boolean isWhite, int gameID, String auth) {
         try {
-            GameData game = null;
-            for (GameData g : server.listGames(new ListRequest(auth)).games()) {
-                if (g.gameID() == gameID) {
-                    game = g;
-                }
-            }
-            if (game == null) {
-                throw new ServerResponseException("Game id not found.");
-            }
-
-            drawBoard(isWhite, game.game(), new ArrayList<>());
-        }
-        catch (ServerResponseException e) {
+            GameData game = getUpdatedGame(auth, gameID);
+            drawer.drawBoard(isWhite, game.game(), new ArrayList<>());
+        } catch (ServerResponseException e) {
             System.out.println(SET_TEXT_COLOR_RED + "Error getting current game state." + RESET_TEXT_COLOR);
         }
     }
 
     public void highlight(String auth, int gameID, boolean isWhite) {
         try {
-            GameData game = null;
-            for (GameData g : server.listGames(new ListRequest(auth)).games()) {
-                if (g.gameID() == gameID) {
-                    game = g;
-                }
-            }
-            if (game == null) {
-                throw new ServerResponseException("Game id not found.");
-            }
+            GameData game = getUpdatedGame(auth, gameID);
 
             Scanner input = new Scanner(System.in);
             System.out.println("\nPositions should be a lowercase letter designating the column, followed immediately by a single" +
@@ -509,13 +401,11 @@ public class ChessClient implements NotificationHandler {
             }
             positions.add(p); //includes starting position of piece
 
-            drawBoard(isWhite, game.game(), positions);
+            drawer.drawBoard(isWhite, game.game(), positions);
 
-        }
-        catch (ServerResponseException e) {
+        } catch (ServerResponseException e) {
             System.out.println(SET_TEXT_COLOR_RED + "Error getting current game state." + RESET_TEXT_COLOR);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println(SET_TEXT_COLOR_RED + "Invalid command." + RESET_TEXT_COLOR);
         }
     }
@@ -530,8 +420,7 @@ public class ChessClient implements NotificationHandler {
                 ws.resign(auth, gameID);
                 System.out.println("Thanks for playing! Better luck next time.");
             }
-        }
-        catch (ServerResponseException e) {
+        } catch (ServerResponseException e) {
             System.out.println(SET_TEXT_COLOR_RED + "Unable to connect to server to resign." + RESET_TEXT_COLOR);
         }
 
@@ -541,27 +430,13 @@ public class ChessClient implements NotificationHandler {
         try {
             ws.leave(auth, gameID);
             System.out.println("You left the game. Thanks for playing! Come play again soon!");
-        }
-        catch (ServerResponseException e) {
+        } catch (ServerResponseException e) {
             System.out.println(SET_TEXT_COLOR_RED + "Unable to connect to server to leave." + RESET_TEXT_COLOR);
         }
     }
 
-    public void observeRepl(int gameID, String auth, String username) {
-
-
-        GameData game = null;
+    public void observeRepl(int gameID, String auth) {
         try {
-            for (GameData g : server.listGames(new ListRequest(auth)).games()) {
-                if (g.gameID() == gameID) {
-                    game = g;
-                }
-            }
-            if (game == null) {
-                throw new ServerResponseException("Game id not found.");
-            }
-
-//            drawBoard(isWhite, game.game());
             Scanner scanner = new Scanner(System.in);
             boolean playing = true;
             String input = "";
@@ -581,184 +456,44 @@ public class ChessClient implements NotificationHandler {
                     }
                     case "-s" -> highlight(auth, gameID, true);
                 }
-
-
             }
-        }
-        catch (ServerResponseException e) {
-            System.out.println("unable to find game.");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("invalid command. ");
         }
     }
 
     public void observerHelp(int gameId, String auth) {
         try {
-            GameData game = null;
-            for (GameData g : server.listGames(new ListRequest(auth)).games()) {
-                if (g.gameID() == gameId) {
-                    game = g;
-                }
-            }
-            if (game == null) {
-                throw new ServerResponseException("Game id not found.");
-            }
-
-            System.out.print("You are observing. ");
-            System.out.print("It's " + game.game().getTeamTurn() + "'s turn. Use -s to show legal moves.\n");
-            System.out.println("You can also use -l to leave the game, or -d to redraw the board anytime. \n\n\t\t\t\t\t*\t*\t*\t\t\t\n");
-        }
-        catch (ServerResponseException e) {
-            System.out.print("Error getting current game state. Use -s to show your possible moves and -l to leave the game." +
-                    "\n\n\t\t\t\t\t*\t*\t*\t\t\t\n");
+            GameData game = getUpdatedGame(auth, gameId);
+            drawer.printObserverHelp(game.game().getTeamTurn());
+        } catch (ServerResponseException e) {
+            System.out.print("Error getting current game state. See commands below.");
         }
     }
 
-
-    public void drawBoard(boolean isWhite, ChessGame game, Collection<ChessPosition> highlighted) {
-        ChessBoard board = game.getBoard();
-        System.out.print("\u001b[49;38;2;127;161;124;1m");
-//        System.out.print("\u001b[35;105;1m 1 ");
-
-        if (isWhite) {
-
-            System.out.println("    a   b   c   d   e  f   g   h   \u001b[49m");
-
-            ChessPosition pos;
-            for (int i=8; i>0; i--) {
-                System.out.print("\u001b[49;38;2;127;161;124;1m " + i + " \u001b[30m");
-                for (int j=1; j<9; j++) {
-                    pos = new ChessPosition(i,j);
-                    printSquare(i,j,board,highlighted.contains(pos));
-                }
-                System.out.print("\u001b[49;38;2;127;161;124;1m " + i + "  \u001b[49m\n");
-            }
-            System.out.print("\u001b[49;38;2;127;161;124;1m");
-            System.out.println("    a   b   c   d   e  f   g   h   \u001b[49m");
-        }
-        else {
-            System.out.println("    h   g   f   e   d  c   b   a   \u001b[49m");
-
-            ChessPosition pos;
-            for (int i=1; i<9; i++) {
-                System.out.print("\u001b[49;38;2;127;161;124;1m " + i + " \u001b[30m");
-                for (int j=8; j>0; j--) {
-                    pos = new ChessPosition(i,j);
-                    printSquare(i,j,board,highlighted.contains(pos));
-                }
-                System.out.print("\u001b[49;38;2;127;161;124;1m " + i + "  \u001b[49m\n");
-            }
-            System.out.print("\u001b[49;38;2;127;161;124;1m");
-            System.out.println("    h   g   f   e   d  c   b   a   \u001b[49m");
-        }
-        System.out.print("\u001b[39m");
-
-    }
-
-    public void printSquare(int i, int j, ChessBoard board, boolean highlighted)  {
-        ChessPosition pos = new ChessPosition(i,j);
-        if (i % 2 != j % 2) {
-            //white square
-            if (highlighted) {
-                System.out.print("\u001b[48;2;254;255;199m");
-            }
-            else {
-                System.out.print("\u001b[48;2;214;191;206m");
+    public GameData getUpdatedGame(String auth, int gameID) throws ServerResponseException {
+        GameData game = null;
+        for (GameData g : server.listGames(new ListRequest(auth)).games()) {
+            if (g.gameID() == gameID) {
+                game = g;
             }
         }
-        else {
-            //black square
-            if (highlighted) {
-                System.out.print("\u001b[48;2;195;198;108m");
-
-            } else {
-                System.out.print("\u001b[48;2;128;102;119m");
-
-            }
+        if (game == null) {
+            throw new ServerResponseException("Game id not found.");
         }
-        if (board.getPiece(pos) == null) {
-            System.out.print(EMPTY);
-        }
-        else {
-            printPiece(board.getPiece(pos));
-        }
-    }
-
-    public void printPiece(ChessPiece piece) {
-        if (piece.getTeamColor() == WHITE){
-            switch (piece.getPieceType()) {
-                case ROOK -> {
-                    System.out.print(WHITE_ROOK);
-                }
-                case BISHOP -> {
-                    System.out.print(WHITE_BISHOP);
-                }
-                case QUEEN -> {
-                    System.out.print(WHITE_QUEEN);
-                }
-                case KING -> {
-                    System.out.print(WHITE_KING);
-                }
-                case KNIGHT -> {
-                    System.out.print(WHITE_KNIGHT);
-                }
-                case PAWN -> {
-                    System.out.print(WHITE_PAWN);
-                }
-                default -> {
-                    ;
-                }
-            }
-        }
-        else {
-            switch (piece.getPieceType()) {
-                case ROOK -> {
-                    System.out.print(BLACK_ROOK);
-                }
-                case BISHOP -> {
-                    System.out.print(BLACK_BISHOP);
-                }
-                case QUEEN -> {
-                    System.out.print(BLACK_QUEEN);
-                }
-                case KING -> {
-                    System.out.print(BLACK_KING);
-                }
-                case KNIGHT -> {
-                    System.out.print(BLACK_KNIGHT);
-                }
-                case PAWN -> {
-                    System.out.print(BLACK_PAWN);
-                }
-                default -> {
-                    ;
-                }
-            }
-        }
+        return game;
     }
 
     @Override
     public void notify(ServerMessage message) {
         switch (message.getServerMessageType()) {
             case NOTIFICATION -> System.out.println(SET_TEXT_COLOR_MAGENTA + ((NotificationMessage) message).getMessage() + RESET_TEXT_COLOR);
-            case ERROR -> {
-//                System.out.println("MESSAGE!! Error");
-//                System.out.println(SET_TEXT_COLOR_RED + "hello" + RESET_TEXT_COLOR);
-//                System.out.println(((ErrorMessage) message).getErrorMessage());
-                System.out.println(SET_TEXT_COLOR_RED + ((ErrorMessage) message).getErrorMessage() + RESET_TEXT_COLOR);
-            }
+            case ERROR -> System.out.println(SET_TEXT_COLOR_RED + ((ErrorMessage) message).getErrorMessage() + RESET_TEXT_COLOR);
             case LOAD_GAME -> {
                 System.out.println(SET_TEXT_COLOR_GREEN + "Game updated." + RESET_TEXT_COLOR);
                 GameData game = ((LoadGameMessage) message).getGame();
-                //how to tell if this client is player/observer, black/white?
-                drawBoard(current_color == WHITE || current_color == null, game.game(), new ArrayList<>());
-
+                drawer.drawBoard(currentColor == WHITE || currentColor == null, game.game(), new ArrayList<>());
             }
         }
-
-
     }
-
-
 }
