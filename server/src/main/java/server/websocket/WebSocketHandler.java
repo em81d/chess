@@ -149,7 +149,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 //            connections.sendToSession(gameID, session, new NotificationMessage("in move 4"));
             try {
                 if (!game.teamValidMoves(team).contains(move.getMove())) {
-                    throw new InvalidMoveException("Cannot move other player's piece. " + move.getMove());
+                    throw new InvalidMoveException("Invalid move.");
                 }
 //                connections.sendToSession(gameID, session, new NotificationMessage("in move 5"));
                 game.makeMove(move.getMove());
@@ -159,9 +159,27 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 connections.broadcast(gameID, session, new NotificationMessage(username + " made a move.")); //should say what move
 
                 if (game.isInCheckmate(other_team)) {
-                    connections.broadcast(gameID, null, new NotificationMessage(other_team + " is in check" +
-                            "mate! " + team + " won."));
+                    String checkmate_username = "";
+                    if (gameData.whiteUsername().equals(username)) {
+                        checkmate_username = gameData.blackUsername();
+                    }
+                    else {
+                        checkmate_username = gameData.whiteUsername();
+                    }
+                    connections.broadcast(gameID, null, new NotificationMessage(checkmate_username + " is in check" +
+                            "mate! " + username + " won."));
                     connections.removeAll(gameID);
+                }
+                if (game.isInCheck(other_team)) {
+
+                    String check_username = "";
+                    if (gameData.whiteUsername().equals(username)) {
+                        check_username = gameData.blackUsername();
+                    }
+                    else {
+                        check_username = gameData.whiteUsername();
+                    }
+                    connections.broadcast(gameID, null, new NotificationMessage(check_username + " is in check!"));
                 }
             } catch (InvalidMoveException e) {
 //                connections.sendToSession(gameID, session, new NotificationMessage("here1"));
