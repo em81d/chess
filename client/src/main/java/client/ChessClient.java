@@ -484,13 +484,14 @@ public class ChessClient implements NotificationHandler {
 
             ChessPiece piece = game.game().getBoard().getPiece(p);
             Collection<ChessMove> moves = piece.pieceMoves(game.game().getBoard(), p);
-            Collection<ChessPosition> moveToPositions = new ArrayList<>();
+            Collection<ChessPosition> positions = new ArrayList<>();
 
             for (ChessMove move : moves) {
-                moveToPositions.add(move.getEndPosition());
+                positions.add(move.getEndPosition());
             }
+            positions.add(p); //includes starting position of piece
 
-            drawBoard(isWhite, game.game(), moveToPositions);
+            drawBoard(isWhite, game.game(), positions);
 
         }
         catch (ServerResponseException e) {
