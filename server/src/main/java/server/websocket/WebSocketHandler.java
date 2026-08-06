@@ -97,7 +97,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             if (gameDao.getGame(gameID) == null) {
                 throw new ServerResponseException("Error: invalid game id");
             }
-            var message = String.format("%s has joined the game.", username);
+            String color = null;
+            if (gameDao.getGame(gameID).whiteUsername() != null && gameDao.getGame(gameID).whiteUsername().equals(username)) {
+                color = "white";
+            }
+            else {
+                color = "black";
+            }
+            var message = String.format("%s has joined the game as %s.", username, color);
             var notification = new NotificationMessage(message);
             connections.broadcast(gameID, session, notification);
             connections.sendToSession(gameID, session, new LoadGameMessage(gameDao.getGame(gameID)));

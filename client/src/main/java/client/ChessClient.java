@@ -520,10 +520,9 @@ public class ChessClient implements NotificationHandler {
     }
 
     public void leaveGame(String auth, int gameID) {
-        System.out.println("You left the game. Come back and play soon!");
         try {
             ws.leave(auth, gameID);
-            System.out.println("Thanks for playing! Come play again soon!");
+            System.out.println("You left the game. Thanks for playing! Come play again soon!");
         }
         catch (ServerResponseException e) {
             System.out.println(SET_TEXT_COLOR_RED + "Unable to connect to server to leave." + RESET_TEXT_COLOR);
