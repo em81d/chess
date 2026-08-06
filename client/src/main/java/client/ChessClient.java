@@ -30,10 +30,14 @@ public class ChessClient implements NotificationHandler {
     private Map<Integer,Integer> gameIDs;
     private final WebSocketFacade ws;
 
+    private ChessGame.TeamColor current_color;
+    private boolean is_observer;
+
 
     public ChessClient(String serverUrl) throws ServerResponseException {
         server = new ServerFacade(serverUrl);
         ws = new WebSocketFacade(serverUrl, this);
+        current_color = null;
     }
 
     public void run() {
@@ -295,8 +299,17 @@ public class ChessClient implements NotificationHandler {
                 try {
                     System.out.print("BLACK or WHITE: ");
                     String color = scanner.nextLine();
+
                     server.join(new JoinRequest(auth, color, gameIDs.get(gameNumber)));
-                    ws.connect(auth, gameIDs.get(gameNumber));                                                    // ???
+                    ws.connect(auth, gameIDs.get(gameNumber));
+
+                    if (color.equals("WHITE")) {
+                        current_color = WHITE;
+                    }
+                    else {
+                        current_color = BLACK;
+                    }
+
                     postJoinRepl(gameIDs.get(gameNumber), auth, color.equals("WHITE"), username);
                 }
                 catch (ServerResponseException e) {
@@ -376,6 +389,9 @@ public class ChessClient implements NotificationHandler {
         }
         catch (ServerResponseException e) {
             System.out.println("unable to find game.");
+        }
+        catch (Exception e) {
+            System.out.println("invalid command. ");
         }
 
     }
@@ -558,7 +574,7 @@ public class ChessClient implements NotificationHandler {
                 System.out.println(SET_TEXT_COLOR_GREEN + "Game updated." + RESET_TEXT_COLOR);
                 GameData game = ((LoadGameMessage) message).getGame();
                 //how to tell if this client is player/observer, black/white?
-                drawBoard(true, game.game());
+                drawBoard(current_color == WHITE, game.game());
 
             }
         }
