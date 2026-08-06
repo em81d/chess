@@ -10,6 +10,8 @@ import websocket.commands.ConnectCommand;
 import websocket.commands.LeaveGameCommand;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.ResignCommand;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
@@ -41,8 +43,15 @@ public class WebSocketFacade extends Endpoint {
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
-                    NotificationMessage notification = new Gson().fromJson(message, NotificationMessage.class);
-                    notificationHandler.notify(notification);       //deserializes and passes right along to the notification handler
+                    ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
+
+                    switch (notification.getServerMessageType()) {
+                        case ERROR -> notificationHandler.notify(new Gson().fromJson(message, ErrorMessage.class));
+                        case LOAD_GAME -> notificationHandler.notify(new Gson().fromJson(message, LoadGameMessage.class));
+                        case NOTIFICATION -> notificationHandler.notify(new Gson().fromJson(message, NotificationMessage.class));
+                    }
+
+//                    notificationHandler.notify(notification);       //deserializes and passes right along to the notification handler
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
@@ -92,8 +101,9 @@ public class WebSocketFacade extends Endpoint {
 
             ChessMove chessmove = new ChessMove(toPosition(moveFrom), toPosition(moveTo), toPromotion(promotion));
 
-            MakeMoveCommand move = new MakeMoveCommand(auth, gameID, chessmove);
-            this.session.getBasicRemote().sendText(new Gson().toJson(move));
+            MakeMoveCommand m = new MakeMoveCommand(auth, gameID, chessmove);
+            this.session.getBasicRemote().sendText(new Gson().toJson(m));
+//            System.out.println("successfully ran this method.");
         }
         catch (IOException e) {
             throw new ServerResponseException("Error: " + e.getMessage());
@@ -123,18 +133,18 @@ public class WebSocketFacade extends Endpoint {
         int i;
         int j;
 
-        switch (posString.charAt(0)) {
-            case 'a' -> i = 1;
-            case 'b' -> i = 2;
-            case 'c' -> i = 3;
-            case 'd' -> i = 4;
-            case 'e' -> i = 5;
-            case 'f' -> i = 6;
-            case 'g' -> i = 7;
-            case 'h' -> i = 8;
-            default -> i = -1;
+        switch (posString.charAt(1)) {
+            case 'a' -> j = 1;
+            case 'b' -> j = 2;
+            case 'c' -> j = 3;
+            case 'd' -> j = 4;
+            case 'e' -> j = 5;
+            case 'f' -> j = 6;
+            case 'g' -> j = 7;
+            case 'h' -> j = 8;
+            default -> j = -1;
         }
-        j = Character.getNumericValue(posString.charAt(1));
+        i = Character.getNumericValue(posString.charAt(0));
 
         return new ChessPosition(i,j);
     }

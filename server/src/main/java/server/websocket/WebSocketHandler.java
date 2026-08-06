@@ -60,8 +60,15 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             String username = authDao.getAuth(auth).username();
 
             switch (cmd.getCommandType()) {
-                case CONNECT -> connect(gameId, session, username);
-                case MAKE_MOVE -> move(gameId, session, username, ctx.message());
+                case CONNECT -> {
+//                    connections.sendToSession(gameId, session, new NotificationMessage("will connect"));
+                    connect(gameId, session, username);
+                }
+                case MAKE_MOVE -> {
+//                    connections.sendToSession(gameId, session, new NotificationMessage("will move"));
+                    move(gameId, session, username, ctx.message());
+//                    connections.sendToSession(gameId, session, new NotificationMessage("move command executed"));
+                }
                 case LEAVE -> leave(gameId, session, username);
                 case RESIGN -> resign(gameId, session, username);
             }
@@ -105,20 +112,21 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     private void move(int gameID, Session session, String username, String cmd) throws IOException{
         try {
+//            connections.sendToSession(gameID, session, new NotificationMessage("in move"));
             GameData gameData = gameDao.getGame(gameID);
             ChessGame.TeamColor team;
             ChessGame.TeamColor other_team;
-            if (gameData.blackUsername().equals(username)) {
+//            connections.sendToSession(gameID, session, new NotificationMessage("in move 1"));
+            if (gameData.blackUsername() != null && gameData.blackUsername().equals(username)) {
                 team = BLACK;
                 other_team = WHITE;
-            }
-            else if (gameData.whiteUsername().equals(username)){
+            } else if (gameData.whiteUsername() != null && gameData.whiteUsername().equals(username)) {
                 team = WHITE;
                 other_team = BLACK;
-            }
-            else {
+            } else {
                 throw new ServerResponseException("Observer cannot move!!");
             }
+//            connections.sendToSession(gameID, session, new NotificationMessage("in move 2"));
 
             if (gameData.game() == null) {
                 throw new ServerResponseException("Error: chess game has not been created");
@@ -127,13 +135,18 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 throw new ServerResponseException("Game is over.");
             }
 
+//            connections.sendToSession(gameID, session, new NotificationMessage("in move 3"));
+
             MakeMoveCommand move = new Gson().fromJson(cmd, MakeMoveCommand.class);
             ChessGame game = gameData.game();
+//            connections.sendToSession(gameID, session, new NotificationMessage("in move 4"));
             try {
                 if (!game.teamValidMoves(team).contains(move.getMove())) {
                     throw new InvalidMoveException("Cannot move other player's piece.");
                 }
+//                connections.sendToSession(gameID, session, new NotificationMessage("in move 5"));
                 game.makeMove(move.getMove());
+//                connections.sendToSession(gameID, session, new NotificationMessage("in move 6"));
                 GameData newGame = new GameData(gameID, gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), game);
                 connections.broadcast(gameID, null, new LoadGameMessage(newGame));
                 connections.broadcast(gameID, session, new NotificationMessage(username + " made a move.")); //should say what move
@@ -143,9 +156,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                             "mate! " + team + " won."));
                     connections.removeAll(gameID);
                 }
-            }
-            catch (InvalidMoveException e) {
-                connections.sendToSession(gameID, session, new ErrorMessage("Invalid move." + e.getMessage()));
+            } catch (InvalidMoveException e) {
+//                connections.sendToSession(gameID, session, new NotificationMessage("here1"));
+                connections.sendToSession(gameID, session, new ErrorMessage("Invalid move. " + e.getMessage()));
+//                connections.sendToSession(gameID, session, new NotificationMessage("here2"));
             }
 
         }

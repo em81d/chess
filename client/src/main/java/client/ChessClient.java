@@ -442,7 +442,7 @@ public class ChessClient implements NotificationHandler {
 
         if (isWhite) {
 
-            System.out.println("    a  b  c  d  e  f  g  h   \u001b[49m");
+            System.out.println("    a   b   c   d   e  f   g   h   \u001b[49m");
 
             ChessPosition pos;
             for (int i=8; i>0; i--) {
@@ -453,10 +453,10 @@ public class ChessClient implements NotificationHandler {
                 System.out.print("\u001b[49;38;2;127;161;124;1m " + i + "  \u001b[49m\n");
             }
             System.out.print("\u001b[49;38;2;127;161;124;1m");
-            System.out.println("    a  b  c  d  e  f  g  h   \u001b[49m");
+            System.out.println("    a   b   c   d   e  f   g   h   \u001b[49m");
         }
         else {
-            System.out.println("    h  g  f  e  d  c  b  a   \u001b[49m");
+            System.out.println("    h   g   f   e   d  c   b   a   \u001b[49m");
 
             ChessPosition pos;
             for (int i=1; i<9; i++) {
@@ -467,7 +467,7 @@ public class ChessClient implements NotificationHandler {
                 System.out.print("\u001b[49;38;2;127;161;124;1m " + i + "  \u001b[49m\n");
             }
             System.out.print("\u001b[49;38;2;127;161;124;1m");
-            System.out.println("    h  g  f  e  d  c  b  a   \u001b[49m");
+            System.out.println("    h   g   f   e   d  c   b   a   \u001b[49m");
         }
         System.out.print("\u001b[39m");
 
@@ -548,7 +548,12 @@ public class ChessClient implements NotificationHandler {
     public void notify(ServerMessage message) {
         switch (message.getServerMessageType()) {
             case NOTIFICATION -> System.out.println(SET_TEXT_COLOR_MAGENTA + ((NotificationMessage) message).getMessage() + RESET_TEXT_COLOR);
-            case ERROR -> System.out.println(SET_TEXT_COLOR_RED + ((ErrorMessage) message).getErrorMessage() + RESET_TEXT_COLOR);
+            case ERROR -> {
+//                System.out.println("MESSAGE!! Error");
+//                System.out.println(SET_TEXT_COLOR_RED + "hello" + RESET_TEXT_COLOR);
+//                System.out.println(((ErrorMessage) message).getErrorMessage());
+                System.out.println(SET_TEXT_COLOR_RED + ((ErrorMessage) message).getErrorMessage() + RESET_TEXT_COLOR);
+            }
             case LOAD_GAME -> {
                 System.out.println(SET_TEXT_COLOR_GREEN + "Game updated." + RESET_TEXT_COLOR);
                 GameData game = ((LoadGameMessage) message).getGame();
