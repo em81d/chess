@@ -43,3 +43,8 @@ java -jar client/target/client-jar-with-dependencies.jar
 
 ♕ 240 Chess Client: chess.ChessPiece@7852e922
 ```
+
+<img width="715" height="194" alt="image" src="https://github.com/user-attachments/assets/f286d318-4c2f-4e95-bce5-2c5d81dfb459" />
+<img width="1474" height="399" alt="image" src="https://github.com/user-attachments/assets/3744e878-cad9-455b-9cc9-2c07ff8b8385" />
+
+
