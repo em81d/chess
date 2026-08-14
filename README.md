@@ -1,4 +1,4 @@
-# ♕ BYU CS 240 Chess (IN PROGRESS - est. completion Aug 1 2026)
+# ♕ BYU CS 240 Chess 
 
 This project demonstrates mastery of proper software design, client/server architecture, networking using HTTP and WebSocket, database persistence, unit testing, serialization, and security.
 
